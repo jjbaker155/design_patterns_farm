@@ -1,11 +1,11 @@
 # Compiled class file
-*.class
+/build/classes/java/main/main/java/*.class
 
 # Log file
 *.log
 
 ### Eclipse ###
-.prefs
+*.prefs
 
 ### Eclipse Patch ###
 # Eclipse Core		
