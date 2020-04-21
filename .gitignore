@@ -5,6 +5,7 @@
 *.log
 
 ### Eclipse ###
+.prefs
 
 ### Eclipse Patch ###
 # Eclipse Core		
