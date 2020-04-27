@@ -6,12 +6,14 @@ import exceptions.NoSuchFarmTypeException;
 
 public class FarmControl {
     
-    private final int INITIAL_FARMS = 1;
     private final int INITIAL_FARMERS = 3;
+    private final int MAX_ACREAGE = 1000;
+
+    private Random rand;
     
-    private FarmFactory ff = FarmFactory.create();
     
-    private Random rand = new Random();
+    //the only farm control - singleton
+    private static FarmControl theOnlyFarmControl;
     
     
     /**
@@ -25,26 +27,32 @@ public class FarmControl {
      * @return FamrControl
      */
     public static FarmControl createFarmControl() {
-        return new FarmControl();
+        if (theOnlyFarmControl == null) {
+            theOnlyFarmControl = new FarmControl();
+        }
+        return theOnlyFarmControl;
     }
     
     
-    public Farm generateInitialFarm() throws NoSuchFarmTypeException {
-        //equal chance for each farm type
-        int whatFarm = rand.nextInt(1);
-        if (whatFarm == 0)
-            return ff.makeFarm("A"); //make animal farm
-        if (whatFarm == 1)
-            return ff.makeFarm("C"); //make crop farm
-        else
-            return null;
-    }
-    
-    
+    /**
+     * Generate 3 random farmer types for your farm
+     * @param farm
+     */
     private void generateInitialFarmers(Farm farm) {
         
     }
     
-    //place order (commodity type)
+    /**
+     * Generate 4 random initial assets for your farm
+     */
+    private void generateInitialAssets() {
+        
+    }
     
+    /**
+     * Generate 1 random asset for your farm
+     */
+    private void generateAsset() {
+        
+    }
 }

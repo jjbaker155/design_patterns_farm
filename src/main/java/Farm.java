@@ -14,14 +14,29 @@ public class Farm {
     private ArrayList<Farmer> farmers;
     //size of farm in square acres
     private double acres;
-    
+    //list of assets
+    private ArrayList<Asset> assets;
+    //the only farm - singleton
+    private static Farm theOnlyFarm;
 
     /**
-     * Constructor sets up new ArrayList of Farmer. Sets default acres.
+     * Private constructor sets up new ArrayList of Farmer. Sets default acres.
      */
-    public Farm(double a) {
+    private Farm(double a) {
         farmers = new ArrayList <Farmer> ();
         acres = a;
+    }
+    
+    /**
+     * Makes the only farm
+     * @param a acres
+     * @return Farm
+     */
+    public static Farm makeFarm(double a) {
+        if (theOnlyFarm == null) {
+            theOnlyFarm = new Farm(a);
+        }
+        return theOnlyFarm;
     }
     
     /**
@@ -65,9 +80,18 @@ public class Farm {
         return farmers.size();
     }
     
-    public Object getName() {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * Retrurns an acre productivity factor ranging from 0.5 to 1
+     * @return
+     */
+    public double acreProductivity() {
+        double prod = 0.5 + (farmers.size()/acres)/2;
+        if (prod > 1.0) {
+            return 1.0;
+        }
+        else {
+            return prod;
+        }
     }
     
 }

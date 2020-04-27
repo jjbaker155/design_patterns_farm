@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 public class FarmTest {
     
     //create farm with 1 acre
-    private Farm farm1 = new Farm(1);
+    private Farm farm1 = Farm.makeFarm(1);
     
     
     @Before
