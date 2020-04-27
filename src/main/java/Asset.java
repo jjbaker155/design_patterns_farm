@@ -1,6 +1,6 @@
 package main.java;
 
-public class Asset {
+public abstract class Asset {
 
     public Asset() {
         // TODO Auto-generated constructor stub
@@ -16,6 +16,12 @@ public class Asset {
     //Strategy DP - how this asset gets harvested
     private HarvestStrategy harvestStrategy;
     
+    
+    public Asset(int c, int p, double l) {
+        landNeeded = l;
+        cost = c;
+        profit = p;
+    }
     
     /**
      *  Sets the amount of land this animal occupies

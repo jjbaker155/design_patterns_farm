@@ -2,14 +2,14 @@ package main.java;
 
 import java.util.Random;
 
-import exceptions.NoSuchFarmTypeException;
-
 public class FarmControl {
     
     private final int INITIAL_FARMERS = 3;
     private final int MAX_ACREAGE = 1000;
 
     private Random rand;
+    
+    private Farm farm;
     
     
     //the only farm control - singleton
@@ -24,7 +24,7 @@ public class FarmControl {
     
     /**
      * Create singleton FarmControl
-     * @return FamrControl
+     * @return FarmControl
      */
     public static FarmControl createFarmControl() {
         if (theOnlyFarmControl == null) {
@@ -38,21 +38,31 @@ public class FarmControl {
      * Generate 3 random farmer types for your farm
      * @param farm
      */
-    private void generateInitialFarmers(Farm farm) {
+    public void generateInitialFarmers(Farm farm) {
         
     }
     
     /**
      * Generate 4 random initial assets for your farm
      */
-    private void generateInitialAssets() {
+    public void generateInitialAssets(Farm farm) {
         
     }
     
     /**
-     * Generate 1 random asset for your farm
+     * Adds a farmer (random type)
+     * @param Farm to add a Farmer to
      */
-    private void generateAsset() {
+    public void hireFarmer(Farm farm) {
+        
+    }
+    
+    /**
+     * Add an asset to your farm
+     * @param Farm to add the asset to
+     * @param String representing asset type
+     */
+    public void purchaseAsset(Farm farm) {
         
     }
 }
