@@ -16,14 +16,19 @@ public class Farm {
     private double acres;
     //list of assets
     private ArrayList<Asset> assets;
+    //odds of a predator attack per acre 
+    private static final double PREDATOR_CHANCE = .25;
+    
     //the only farm - singleton
     private static Farm theOnlyFarm;
 
     /**
-     * Private constructor sets up new ArrayList of Farmer. Sets default acres.
+     * Private constructor sets up new ArrayList of Farmer, and array list of Assets
+     * Sets default acres.
      */
     private Farm(double a) {
-        farmers = new ArrayList <Farmer> ();
+        farmers = new ArrayList<Farmer>();
+        assets = new ArrayList<Asset>();
         acres = a;
     }
     
@@ -81,7 +86,7 @@ public class Farm {
     }
     
     /**
-     * Retrurns an acre productivity factor ranging from 0.5 to 1
+     * Returns an acre productivity factor ranging from 0.5 to 1
      * @return
      */
     public double acreProductivity() {
@@ -92,6 +97,11 @@ public class Farm {
         else {
             return prod;
         }
+    }
+    
+    //TODO: write after state pattern is put together
+    public void attack() {
+        
     }
     
 }

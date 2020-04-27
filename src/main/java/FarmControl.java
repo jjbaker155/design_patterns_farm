@@ -4,12 +4,15 @@ import java.util.Random;
 
 public class FarmControl {
     
+    //defaults
     private final int INITIAL_FARMERS = 3;
-    private final int MAX_ACREAGE = 1000;
-
-    private Random rand;
+    private final double MAX_ACREAGE = 1000;
+    private final int MAX_MONEY = 100000;
+    private final double STARTING_ACREAGE = 1;
     
+    private Random rand;
     private Farm farm;
+    private FarmerControl farmerControl;
     
     
     //the only farm control - singleton
@@ -19,7 +22,9 @@ public class FarmControl {
     /**
      * Private constructor
      */
-    private FarmControl() {   
+    private FarmControl() {
+        farm = Farm.makeFarm(STARTING_ACREAGE);
+        farmerControl = FarmerControl.createFarmerControl();
     }
     
     /**
@@ -53,16 +58,18 @@ public class FarmControl {
      * Adds a farmer (random type)
      * @param Farm to add a Farmer to
      */
-    public void hireFarmer(Farm farm) {
-        
+    public void hireRandomFarmer(Farm farm) {
+        farm.addFarmer(farmerControl.randomFarmer());
     }
     
     /**
-     * Add an asset to your farm
+     * Add a random asset to your farm
      * @param Farm to add the asset to
      * @param String representing asset type
      */
-    public void purchaseAsset(Farm farm) {
+    public void purchaseRandomAsset(Farm farm) {
         
     }
+    
+    
 }

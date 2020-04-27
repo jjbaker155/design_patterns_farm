@@ -1,4 +1,6 @@
 package main.java;
+import java.util.Random;
+
 import main.java.Farmer;
 
 public class FarmerControl {
@@ -7,12 +9,16 @@ public class FarmerControl {
         CROPS, LIVESTOCK, DAIRY, MERCHANT;
     }
     
+    private Random rand = new Random();
+    private FarmControl farmControl;
     private static FarmerControl fcSoleInstance;
+    
     
     /**
      * Private constructor
      */
     private FarmerControl() {
+        farmControl = FarmControl.createFarmControl();
     }
     
     /**
@@ -27,13 +33,21 @@ public class FarmerControl {
         return fcSoleInstance;
     }
     
+    /**
+     * Creates and returns farmer of a random kind
+     * @return farmer
+     */
+    public Farmer randomFarmer() {
+        int num = FarmerKind.values().length;
+        return createFarmer(FarmerKind.values()[rand.nextInt(num)]);
+    }
     
     /**
      * Creates a farmer of the kind passed to this method
      * @param k the kind of farmer
      * @return one farmer, ready to work
      */
-    public Farmer createFarmer(FarmerKind k) {
+    private Farmer createFarmer(FarmerKind k) {
         return new Farmer(k);
     }
     
