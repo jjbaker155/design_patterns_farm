@@ -1,6 +1,6 @@
 package main.java;
 
-public class Sheep extends NonMeatAnimal {
+public class Sheep extends Animal {
     private final double CHANCE_TO_PROCREATE = 0.3;
     private final double LAND_NEEDED = 0.2;
     private final int COST = 150;

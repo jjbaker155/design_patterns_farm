@@ -21,6 +21,8 @@ public abstract class Animal extends Asset{
     private int age;
     //chance to procreate
     private double procreateChance;
+    //A state context to dictate behaviors
+    private final AnimalStateContext stateContext = new AnimalStateContext();
     
     /**
      * Sets required land, and base profit per animal
@@ -104,6 +106,14 @@ public abstract class Animal extends Asset{
      */
     public int getAge() {
         return age;
+    }
+    
+    /**
+     * 
+     * @return a state context to be utilized by control class
+     */
+    public AnimalStateContext getStateContext() {
+        return stateContext;
     }
     
     

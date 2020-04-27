@@ -14,7 +14,7 @@ public class Asset {
     //cost to purchase asset
     private int cost;
     //Strategy DP - how this asset gets harvested
-    private AssetHarvestStrategy hs;
+    private HarvestStrategy harvestStrategy;
     
     
     /**
@@ -62,5 +62,20 @@ public class Asset {
      */
     public int getProfit() {
         return profit;
+    }
+    
+    /**
+     * Sets the HarvestStrategy for this Asset
+     * @param hs
+     */
+    public void setHarvestStrategy(HarvestStrategy hs) {
+        this.harvestStrategy = hs;
+    }
+    
+    /**
+     * Calls harvest() from the appropriate HarvestStrategy object 
+     */
+    public void harvest() {
+        harvestStrategy.harvest(this);
     }
 }

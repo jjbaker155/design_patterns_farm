@@ -9,6 +9,7 @@ import java.util.ArrayList;
  */
 public class Farm {
     
+       
     //list of Farmers
     private ArrayList<Farmer> farmers;
     //size of farm in square acres

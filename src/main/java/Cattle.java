@@ -1,6 +1,6 @@
 package main.java;
 
-public class Cattle extends MeatAnimal {
+public class Cattle extends Animal {
     
     private final double CHANCE_TO_PROCREATE = 0.1;
     private final double LAND_NEEDED = 0.3;
