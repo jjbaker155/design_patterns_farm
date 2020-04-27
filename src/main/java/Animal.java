@@ -18,8 +18,6 @@ public abstract class Animal extends Asset{
     private int age;
     //chance to procreate
     private double procreateChance;
-    //disease death rate
-    private double diseaseDeathRate;
     //A state context to dictate behaviors
     private final AnimalStateContext stateContext = new AnimalStateContext();
     
@@ -28,8 +26,8 @@ public abstract class Animal extends Asset{
      * @param l land
      * @param p profit
      */
-    public Animal(double procreate, int cost, int profit, double land) {
-        super(cost, profit, land);
+    public Animal(double procreate, int cost, int profit, double land, double diseaseDeathRate) {
+        super(cost, profit, land, diseaseDeathRate);
         procreateChance = procreate;
     }
     

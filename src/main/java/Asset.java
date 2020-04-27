@@ -1,11 +1,6 @@
 package main.java;
 
 public abstract class Asset {
-
-    public Asset() {
-        // TODO Auto-generated constructor stub
-    }
-    
     
     //How many acres does it take up
     private double landNeeded;
@@ -15,12 +10,15 @@ public abstract class Asset {
     private int cost;
     //Strategy DP - how this asset gets harvested
     private HarvestStrategy harvestStrategy;
+    //disease death rate
+    private double diseaseDeathRate;
     
     
-    public Asset(int c, int p, double l) {
+    public Asset(int c, int p, double l, double deathRate) {
         landNeeded = l;
         cost = c;
         profit = p;
+        diseaseDeathRate = deathRate;
     }
     
     /**

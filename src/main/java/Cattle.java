@@ -12,6 +12,6 @@ public class Cattle extends Animal {
      * Constructor sets default properties for a Cattle
      */
     public Cattle() {
-        super(CHANCE_TO_PROCREATE, COST, PROFIT, LAND_NEEDED);
+        super(CHANCE_TO_PROCREATE, COST, PROFIT, LAND_NEEDED, DISEASE_DEATH_RATE);
     }
 }
