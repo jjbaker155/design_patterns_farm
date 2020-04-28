@@ -6,7 +6,7 @@ import main.java.Farmer;
 public class FarmerControl {
     
     public enum FarmerKind {
-        CROPS, LIVESTOCK, DAIRY, MERCHANT;
+        CROPS, ANIMAL, DAIRY, MERCHANT;
     }
     
     private Random rand = new Random();
@@ -51,16 +51,5 @@ public class FarmerControl {
         return new Farmer(k);
     }
     
-    public void runCycle() {
-        
-    }
-    
-    public void runDay() {
-        
-    }
-    
-    public void runNight() {
-        
-    }
     
 }

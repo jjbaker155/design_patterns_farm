@@ -34,7 +34,7 @@ public class Farm {
     
     /**
      * Makes the only farm
-     * @param a acres
+     * @param double a acres
      * @return Farm
      */
     public static Farm makeFarm(double a) {
@@ -45,20 +45,20 @@ public class Farm {
     }
     
     /**
+     * Makes a test farm (FOR UNIT TESTING ONLY)
+     * @param double a acres
+     * @return Farm
+     */
+    public static Farm makeTestFarm(double a) {
+        return new Farm(a);
+    }
+    
+    /**
      * 
      * @return size of farm in acres
      */
     public double getSize() {
         return acres;
-    }
-    
-    /**
-     * Returns the class name of this object as a String (might not need this
-     * or might change to Class as return type) 
-     * @return String representation of type
-     */
-    public String getFarmType() {
-        return this.getClass().toString();
     }
     
     /**
@@ -73,7 +73,7 @@ public class Farm {
      * Returns list of farmers 
      * @return
      */
-    public ArrayList<Farmer> farmersList(){
+    public ArrayList<Farmer> getFarmerList(){
         return farmers;
     }
     
@@ -90,7 +90,7 @@ public class Farm {
      * @return
      */
     public double acreProductivity() {
-        double prod = 0.5 + (farmers.size()/acres)/2;
+        double prod = 0.5 + (farmers.size()/acres)/20;
         if (prod > 1.0) {
             return 1.0;
         }
@@ -98,10 +98,37 @@ public class Farm {
             return prod;
         }
     }
+     
+    /**
+     * Adds 1 acre
+     */
+    public void addAcre() {
+        acres = acres + 1.0;
+    }
     
-    //TODO: write after state pattern is put together
-    public void attack() {
-        
+    /**
+     * Sets acres
+     * @param a double acres to be set
+     */
+    public void setAcreage(double a) {
+        acres = a;
+    }
+    
+    /**
+     * Gets size of farm in acres
+     * @return
+     */
+    public double getAcreage() {
+        return acres;
+    }
+    
+    /**
+     * Removed instance of Farmer specified
+     * @param f Farmer to remove
+     * @return true if successful
+     */
+    public boolean removeFarmer(Farmer f) {
+        return farmers.remove(f);
     }
     
 }

@@ -9,10 +9,11 @@ public class FarmControl {
     private final double MAX_ACREAGE = 1000;
     private final int MAX_MONEY = 100000;
     private final double STARTING_ACREAGE = 1;
+    private final int ACRE_COST = 1000;
     
     private Random rand;
     private Farm farm;
-    private FarmerControl farmerControl;
+    private FarmerControl fc;
     
     
     //the only farm control - singleton
@@ -24,7 +25,8 @@ public class FarmControl {
      */
     private FarmControl() {
         farm = Farm.makeFarm(STARTING_ACREAGE);
-        farmerControl = FarmerControl.createFarmerControl();
+        fc = FarmerControl.createFarmerControl();
+        generateInitialFarmers(farm);
     }
     
     /**
@@ -43,8 +45,10 @@ public class FarmControl {
      * Generate 3 random farmer types for your farm
      * @param farm
      */
-    public void generateInitialFarmers(Farm farm) {
-        
+    private void generateInitialFarmers(Farm farm) {
+        for (int i = 0; i <= INITIAL_FARMERS; i++) {
+            farm.addFarmer(fc.randomFarmer());
+        }
     }
     
     /**
@@ -59,7 +63,7 @@ public class FarmControl {
      * @param Farm to add a Farmer to
      */
     public void hireRandomFarmer(Farm farm) {
-        farm.addFarmer(farmerControl.randomFarmer());
+        farm.addFarmer(fc.randomFarmer());
     }
     
     /**
@@ -71,12 +75,8 @@ public class FarmControl {
         
     }
     
-    public void runFarmCycle() {
-        runDay(farm);
-        runNight(farm);
-    }
-    
     private void runDay(Farm farm) {
+        
         //collect revenue
         //reorder dead assets (do not clear acreage)
         //receive delivery of replacement assets on order (do not change acreage)
@@ -93,6 +93,24 @@ public class FarmControl {
         //clear dead assets
         //chance for disease (one living asset per acre)
         //chance for predator (one living asset per acre)
+    }
+    
+    private boolean shouldBuyAcre(Farm farm) {
+        if (farm.getFarmerCount() / farm.getSize() < 0.1 ) {
+            return true;
+        } //todo - more logic
+        return false;
+    }
+    
+    /*
+    private boolean shouldHireFarmer() {
+        
+    }
+    */
+    
+    //TODO: write after state pattern is put together
+    public void predatorAttack() {
+        
     }
     
     

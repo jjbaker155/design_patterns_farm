@@ -4,7 +4,7 @@ import main.java.FarmerControl.FarmerKind;
 
 public class Farmer {
     
-    FarmerKind kind;
+    private FarmerKind kind;
     
     /**
      * Farmer constructor
@@ -14,6 +14,12 @@ public class Farmer {
         kind = k;
     }
     
-    
+    /**
+     * Return the kind of farmer
+     * @return FarmerKind enum
+     */
+    public FarmerKind getFarmerKind() {
+        return kind;
+    }
 }
 
