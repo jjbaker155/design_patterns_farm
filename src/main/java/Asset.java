@@ -10,7 +10,7 @@ import exceptions.AssetAlreadyDeadException;
 
 public abstract class Asset {
     
-    public enum AssetKind {CATTLE, CHICKEN, SHEEP, DAIRYCOW, CORN, SOY}
+    //public enum AssetKind {CATTLE, CHICKEN, SHEEP, DAIRYCOW, CORN, SOY}
     
     //How many acres does it take up
     private double landNeeded;
@@ -39,6 +39,7 @@ public abstract class Asset {
      * Use this method to return a random asset type
      * @return
      */
+    /*
     public static Asset createRandomAsset() {
         int assetNum = rand.nextInt(AssetKind.values().length);
         return createAsset(assetNum);
@@ -50,6 +51,7 @@ public abstract class Asset {
      * @param num
      * @return
      */
+    /*
     public static Asset createAsset(int num) {
         if(num < 0 || num > AssetKind.values().length-1) {
             return null;
@@ -74,6 +76,7 @@ public abstract class Asset {
         }
         return null;
     }
+    */
     
     
     /**

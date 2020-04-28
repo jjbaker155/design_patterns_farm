@@ -1,6 +1,7 @@
 package test;
 
 import main.java.Asset;
+import main.java.AssetFactory;
 import main.java.Farm;
 import main.java.FarmControl;
 import main.java.Farmer;
@@ -27,16 +28,18 @@ import java.util.ArrayList;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FarmTest {
     
-    //create farm with 1 acre
     private Farm farm;
     private Farmer farmer1;
     private Farmer farmer2;
+    private AssetFactory af = AssetFactory.makeAssetFactory();
     
     @Before
     public void setup() {
+        //create farm with 1 acre
         farm = Farm.makeTestFarm();
         farmer1 = new Farmer(FarmerKind.CROPS);
         farmer2 = new Farmer(FarmerKind.ANIMAL);
+        
     }
     
     @Test
@@ -120,7 +123,7 @@ public class FarmTest {
      */
     @Test
     public void mTestAddAsset() {
-        Asset myAsset = Asset.createRandomAsset();
+        Asset myAsset = af.createRandomAsset();
         farm.addAsset(myAsset);
         assertEquals(farm.removeAssetByIndex(0), myAsset);
     }
@@ -130,14 +133,14 @@ public class FarmTest {
      */
     @Test
     public void oTestRemoveAsset() {
-        Asset myAsset = Asset.createRandomAsset();
+        Asset myAsset = af.createRandomAsset();
         farm.addAsset(myAsset);
         assertTrue(farm.removeAsset(myAsset));
     }
     
     @Test
     public void xTestGetAssetList() {
-        Asset myAsset = Asset.createAsset(1);
+        Asset myAsset = af.createAsset(1);
         farm.addAsset(myAsset);
         ArrayList<Asset> list = farm.getAssetList();
         assertEquals(list.get(0), myAsset);
@@ -148,7 +151,7 @@ public class FarmTest {
      */
     @Test
     public void yTestGetAssetByIndex() {
-        Asset myAsset = Asset.createAsset(0);
+        Asset myAsset = af.createAsset(0);
         farm.addAsset(myAsset);
         assertEquals(farm.getAssetByIndex(0), myAsset);
     }

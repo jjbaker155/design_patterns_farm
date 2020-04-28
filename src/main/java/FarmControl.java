@@ -26,6 +26,8 @@ public class FarmControl {
     private Farm farm;
     private FarmerControl farmerControl;
     
+    private AssetFactory af;
+    
     //the only farm control - singleton
     private static FarmControl farmControlSoleInstance;
     
@@ -34,6 +36,7 @@ public class FarmControl {
      */
     private FarmControl() {
         farm = Farm.makeFarm();
+        af = AssetFactory.makeAssetFactory();
     }
     
     /**
@@ -65,7 +68,7 @@ public class FarmControl {
      */
     public void generateInitialAssets(Farm f) {
         for (int i = 0; i < INITIAL_ASSETS; i++) {
-            farm.addAsset(Asset.createRandomAsset());
+            farm.addAsset(af.createRandomAsset());
         }
     }
     
