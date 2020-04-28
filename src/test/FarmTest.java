@@ -7,6 +7,10 @@ import main.java.FarmerControl.FarmerKind;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import exceptions.FarmHasWonException;
+import exceptions.FarmIsBankruptException;
+
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
@@ -21,7 +25,7 @@ public class FarmTest {
     
     @Before
     public void setup() {
-        farm = Farm.makeTestFarm(1.0);
+        farm = Farm.makeTestFarm();
         farmer1 = new Farmer(FarmerKind.CROPS);
         farmer2 = new Farmer(FarmerKind.ANIMAL);
     }
@@ -64,5 +68,44 @@ public class FarmTest {
         farm.setAcreage(5);
         assertTrue(5.0 == farm.getAcreage());
     }
+    
+    @Test
+    public void removeMoneyTest() throws FarmIsBankruptException {
+        farm.setMoney(1000);
+        farm.deductMoney(1);
+        assertEquals(999, farm.getMoney());
+    }
+    
+    @Test (expected = FarmIsBankruptException.class)
+    public void bankruptTest() throws FarmIsBankruptException {
+        farm.setMoney(1000);
+        farm.deductMoney(1001);
+    }
+    
+    @Test
+    public void addMoneyTest() throws FarmHasWonException {
+        farm.setMoney(1000);
+        farm.addMoney(1);
+        assertEquals(1001, farm.getMoney());
+    }
+    
+    @Test (expected = FarmHasWonException.class)
+    public void farmMoneyWinExact() throws FarmHasWonException {
+        farm.setMoney(FarmControl.MAX_MONEY-1);
+        farm.addMoney(1);
+    }
+    
+    @Test (expected = FarmHasWonException.class)
+    public void farmMoneyWinOver() throws FarmHasWonException {
+        farm.setMoney(FarmControl.MAX_MONEY-1);
+        farm.addMoney(2);
+    }
+    
+    @Test (expected = IllegalArgumentException.class)
+    public void tooMuchMoneySet() throws IllegalArgumentException {
+        farm.setMoney(FarmControl.MAX_MONEY);
+    }
+    
+    
     
 }

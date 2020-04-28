@@ -12,12 +12,8 @@ public class AssetStateContext {
     /**
      * Sets the state of the asset that holds this context object
      * @param newState the new state
-     * @throws AssetAlreadyDeadException prevents state changes because asset is dead
      */
-    public void setState(AssetState newState) throws AssetAlreadyDeadException {
-        if (myState.getClass().equals(StateDead.class)) {
-            throw new AssetAlreadyDeadException(); 
-        }
+    public void setState(AssetState newState){
         myState = newState;
     }
     
@@ -28,5 +24,4 @@ public class AssetStateContext {
     public boolean isDiseased() {
         return myState.isDiseased();
     }
-    
 }

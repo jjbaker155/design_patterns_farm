@@ -1,8 +1,16 @@
+/**
+ * Parent for all asset types. Contains and manages attributes that 
+ * all Farm Assets share. Also has some creation methods.
+ */
 package main.java;
+
+import java.util.Random;
 
 import exceptions.AssetAlreadyDeadException;
 
 public abstract class Asset {
+    
+    public enum AssetKind {STEER, CHICKEN, SHEEP, DAIRYCOW, CORN, SOY}
     
     //How many acres does it take up
     private double landNeeded;
@@ -17,6 +25,8 @@ public abstract class Asset {
     //state context for this asset
     private final AssetStateContext sc = new AssetStateContext();
     
+    Random rand = new Random();
+    
     
     public Asset(int c, int p, double l, double deathRate) {
         landNeeded = l;
@@ -24,6 +34,25 @@ public abstract class Asset {
         profit = p;
         diseaseDeathRate = deathRate;
     }
+    
+    /**
+     * Use this method to return a random asset type
+     * @return
+     */
+    public static Asset createRandomAsset() {
+        return new DairyCow();
+    }
+    
+    /**
+     * Pass an integer to this method to create a Farm Asset ->
+     * 1:Steer 2:Chicken 3:Sheep 4:DairyCow 5:Corn 6:Soy
+     * @param num
+     * @return
+     */
+    public static Asset createAsset(int num) {
+        return new DairyCow();
+    }
+    
     
     /**
      *  Sets the amount of land this animal occupies
@@ -124,6 +153,13 @@ public abstract class Asset {
      * @throws AssetAlreadyDeadException Asset is already dead. You cannot change state
      */
     public void setAlive() throws AssetAlreadyDeadException {
+        if(sc.isDiseased()) {
+            throw new AssetAlreadyDeadException();
+        }
+        sc.setState(new StateAlive());
+    }
+    
+    public void setAliveReorder() {
         sc.setState(new StateAlive());
     }
     

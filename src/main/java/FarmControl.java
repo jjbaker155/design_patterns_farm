@@ -2,31 +2,37 @@ package main.java;
 
 import java.util.Random;
 
+import exceptions.AssetAlreadyDeadException;
+import exceptions.FarmIsBankruptException;
+
+/**
+ * Functionality for the Farm at a higher level of abstraction. Decision logic, etc.
+ * @author jjbaker4
+ * @version 1.0
+ *
+ */
 public class FarmControl {
     
     //defaults
-    private final int INITIAL_FARMERS = 3;
-    private final double MAX_ACREAGE = 1000;
-    private final int MAX_MONEY = 100000;
-    private final double STARTING_ACREAGE = 1;
-    private final int ACRE_COST = 1000;
+    public final static int INITIAL_FARMERS = 3;
+    public final static double MAX_ACREAGE = 100;
+    public final static int MAX_MONEY = 10000;
+    public final static int INITIAL_MONEY = 1000;
+    public final static double STARTING_ACREAGE = 1.0;
+    private final static int ACRE_COST = 1000;
     
     private Random rand;
     private Farm farm;
-    private FarmerControl fc;
-    
+    private FarmerControl farmerControl;
     
     //the only farm control - singleton
-    private static FarmControl theOnlyFarmControl;
-    
+    private static FarmControl farmControlSoleInstance;
     
     /**
      * Private constructor
      */
     private FarmControl() {
-        farm = Farm.makeFarm(STARTING_ACREAGE);
-        fc = FarmerControl.createFarmerControl();
-        generateInitialFarmers(farm);
+        farm = Farm.makeFarm();
     }
     
     /**
@@ -34,10 +40,12 @@ public class FarmControl {
      * @return FarmControl
      */
     public static FarmControl createFarmControl() {
-        if (theOnlyFarmControl == null) {
-            theOnlyFarmControl = new FarmControl();
+        if (farmControlSoleInstance == null) {
+            farmControlSoleInstance = new FarmControl();
+            farmControlSoleInstance.attachFarmerControl();
+            farmControlSoleInstance.generateInitialFarmers();
         }
-        return theOnlyFarmControl;
+        return farmControlSoleInstance;
     }
     
     
@@ -45,16 +53,16 @@ public class FarmControl {
      * Generate 3 random farmer types for your farm
      * @param farm
      */
-    private void generateInitialFarmers(Farm farm) {
-        for (int i = 0; i <= INITIAL_FARMERS; i++) {
-            farm.addFarmer(fc.randomFarmer());
+    private void generateInitialFarmers() {
+        for (int i = 0; i <= INITIAL_FARMERS - 1; i++) {
+            farm.addFarmer(farmerControl.randomFarmer());
         }
     }
     
     /**
      * Generate 4 random initial assets for your farm
      */
-    public void generateInitialAssets(Farm farm) {
+    public void generateInitialAssets(Farm f) {
         
     }
     
@@ -62,8 +70,8 @@ public class FarmControl {
      * Adds a farmer (random type)
      * @param Farm to add a Farmer to
      */
-    public void hireRandomFarmer(Farm farm) {
-        farm.addFarmer(fc.randomFarmer());
+    public void hireRandomFarmer() {
+        farm.addFarmer(farmerControl.randomFarmer());
     }
     
     /**
@@ -71,11 +79,11 @@ public class FarmControl {
      * @param Farm to add the asset to
      * @param String representing asset type
      */
-    public void purchaseRandomAsset(Farm farm) {
+    public void purchaseRandomAsset() {
         
     }
     
-    private void runDay(Farm farm) {
+    private void runDay() {
         
         //collect revenue
         //reorder dead assets (do not clear acreage)
@@ -89,13 +97,13 @@ public class FarmControl {
          */
     }
     
-    private void runNight(Farm farm) {
+    private void runNight() {
         //clear dead assets
         //chance for disease (one living asset per acre)
         //chance for predator (one living asset per acre)
     }
     
-    private boolean shouldBuyAcre(Farm farm) {
+    private boolean shouldBuyAcre() {
         if (farm.getFarmerCount() / farm.getSize() < 0.1 ) {
             return true;
         } //todo - more logic
@@ -113,5 +121,34 @@ public class FarmControl {
         
     }
     
+    /**
+     * Returns the Farm object
+     * @return Farm
+     */
+    public Farm getFarm() {
+        return farm;
+    }
     
+  
+    /**
+     * "Pull yourself up by your bootstraps!"
+     */
+    private void attachFarmerControl() {
+        if (farmerControl == null)
+            farmerControl = FarmerControl.createFarmerControl(this);
+    }
+    
+    /**
+     * Reorder the animal. More formally, it sets it to alive and deducts the cost
+     * @param a
+     */
+    private void reOrder(Asset a) {
+        a.setAliveReorder();
+        try {
+            farm.deductMoney(a.getCost());
+        }
+        catch(FarmIsBankruptException e){
+            //TODO: handle end of simulation
+        }
+    }
 }

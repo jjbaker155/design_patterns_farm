@@ -6,19 +6,19 @@ import main.java.Farmer;
 public class FarmerControl {
     
     public enum FarmerKind {
-        CROPS, ANIMAL, DAIRY, MERCHANT;
+        CROPS, ANIMAL, DAIRY, MERCHANT, VETERINARY;
     }
     
     private Random rand = new Random();
     private FarmControl farmControl;
-    private static FarmerControl fcSoleInstance;
+    private static FarmerControl farmerControlSoleInstance;
     
     
     /**
      * Private constructor
      */
-    private FarmerControl() {
-        farmControl = FarmControl.createFarmControl();
+    private FarmerControl(FarmControl farmControl) {
+        this.farmControl = farmControl;
     }
     
     /**
@@ -26,11 +26,11 @@ public class FarmerControl {
      * the existing one if it does. This prevents the existence of more than one FC in the system
      * @return a FarmerControl object
      */
-    public static FarmerControl createFarmerControl() {
-        if (fcSoleInstance == null) {
-            fcSoleInstance = new FarmerControl();
+    public static FarmerControl createFarmerControl(FarmControl farmControl) {
+        if (farmerControlSoleInstance == null) {
+            farmerControlSoleInstance = new FarmerControl(farmControl);
         }
-        return fcSoleInstance;
+        return farmerControlSoleInstance;
     }
     
     /**
@@ -47,7 +47,10 @@ public class FarmerControl {
      * @param k the kind of farmer
      * @return one farmer, ready to work
      */
-    private Farmer createFarmer(FarmerKind k) {
+    public Farmer createFarmer(FarmerKind k) {
+        if (k.ordinal() > FarmerKind.values().length) {
+            throw new IllegalArgumentException("Not a valid farmer type");
+        }
         return new Farmer(k);
     }
     

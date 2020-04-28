@@ -2,8 +2,11 @@ package main.java;
 
 import java.util.ArrayList;
 
+import exceptions.FarmHasWonException;
+import exceptions.FarmIsBankruptException;
+
 /**
- * A single farm
+ * The single farm
  * @author jjbaker4
  *
  */
@@ -18,18 +21,22 @@ public class Farm {
     private ArrayList<Asset> assets;
     //odds of a predator attack per acre 
     private static final double PREDATOR_CHANCE = .25;
+    //amount of money
+    private int currentMoney;
     
     //the only farm - singleton
-    private static Farm theOnlyFarm;
+    private static Farm farmSoleInstance;
+    
 
     /**
      * Private constructor sets up new ArrayList of Farmer, and array list of Assets
      * Sets default acres.
      */
-    private Farm(double a) {
+    private Farm() {
         farmers = new ArrayList<Farmer>();
         assets = new ArrayList<Asset>();
-        acres = a;
+        acres = FarmControl.STARTING_ACREAGE;
+        currentMoney = FarmControl.INITIAL_MONEY;
     }
     
     /**
@@ -37,11 +44,11 @@ public class Farm {
      * @param double a acres
      * @return Farm
      */
-    public static Farm makeFarm(double a) {
-        if (theOnlyFarm == null) {
-            theOnlyFarm = new Farm(a);
+    public static Farm makeFarm() {
+        if (farmSoleInstance == null) {
+            farmSoleInstance = new Farm();
         }
-        return theOnlyFarm;
+        return farmSoleInstance;
     }
     
     /**
@@ -49,8 +56,8 @@ public class Farm {
      * @param double a acres
      * @return Farm
      */
-    public static Farm makeTestFarm(double a) {
-        return new Farm(a);
+    public static Farm makeTestFarm() {
+        return new Farm();
     }
     
     /**
@@ -129,6 +136,51 @@ public class Farm {
      */
     public boolean removeFarmer(Farmer f) {
         return farmers.remove(f);
+    }
+    
+    public boolean removeAsset(Asset a) {
+        return assets.remove(a);
+    }
+    
+    public boolean addAsset(Asset a) {
+        return assets.add(a);
+    }
+    
+    
+    public void setMoney(int money) throws IllegalArgumentException {
+        if(money >= FarmControl.MAX_MONEY) {
+            throw new IllegalArgumentException("Farm cannot have more than " + 
+                    FarmControl.MAX_MONEY + " dollars.");
+        }
+        currentMoney = money;
+    }
+    
+    /**
+     * Deduct money. Throws exception if Farm is bankrupt.
+     * @param d
+     * @throws FarmIsBankruptException
+     */
+    public void deductMoney(int d) throws FarmIsBankruptException {
+        currentMoney -= d;
+        if (currentMoney < 0) {
+            throw new FarmIsBankruptException();
+        }
+    }
+    
+    /**
+     * Add money. Throws exception of Farm has won the simulation.
+     * @param a
+     * @throws FarmHasWonException
+     */
+    public void addMoney(int a) throws FarmHasWonException {
+        currentMoney += a;
+        if (currentMoney >= FarmControl.MAX_MONEY) {
+            throw new FarmHasWonException();
+        }
+    }
+    
+    public int getMoney() {
+        return currentMoney;
     }
     
 }
