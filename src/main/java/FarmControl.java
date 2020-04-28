@@ -1,9 +1,11 @@
 package main.java;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import exceptions.AssetAlreadyDeadException;
 import exceptions.FarmIsBankruptException;
+import main.java.FarmerControl.FarmerKind;
 
 /**
  * Functionality for the Farm at a higher level of abstraction. Decision logic, etc.
@@ -21,6 +23,7 @@ public class FarmControl {
     public final static int INITIAL_MONEY = 1000;
     public final static double STARTING_ACREAGE = 1.0;
     private final static int ACRE_COST = 1000;
+    private final static int FARMER_PER_DIEM = 50;
     
     private Random rand;
     private Farm farm;
@@ -93,14 +96,11 @@ public class FarmControl {
         
         //collect revenue
         //reorder dead assets (do not clear acreage)
-        //receive delivery of replacement assets on order (do not change acreage)
-        /*
-         * check money, farmers, acreage, assets, acreage capacity
-         * decide on purchases/hiring
-         * check for diseased assets
-         * attempt to cure disease
-         * change status to dead, or alive
-         */
+        //try to heal
+        //payroll
+        //should hire farmer?
+        //should buy acre?
+        
     }
     
     private void runNight() {
@@ -109,18 +109,6 @@ public class FarmControl {
         //chance for predator (one living asset per acre)
     }
     
-    private boolean shouldBuyAcre() {
-        if (farm.getFarmerCount() / farm.getSize() < 0.1 ) {
-            return true;
-        } //todo - more logic
-        return false;
-    }
-    
-    /*
-    private boolean shouldHireFarmer() {
-        
-    }
-    */
     
     //TODO: write after state pattern is put together
     public void predatorAttack() {
@@ -150,6 +138,10 @@ public class FarmControl {
      */
     private void reOrder(Asset a) {
         a.setAliveReorder();
+        if(a instanceof Animal) {
+           Animal animal = (Animal) a;
+           animal.setAge(0);
+        }
         try {
             farm.deductMoney(a.getCost());
         }
@@ -157,4 +149,159 @@ public class FarmControl {
             //TODO: handle end of simulation
         }
     }
+    
+    /**
+     * Logic to decide if farm should buy an acre
+     * @return
+     */
+    private boolean shouldBuyAcre() {
+        //if total farmers add up to more than 10 per acre
+        //or if you have 25% more money than needed to buy acre
+        if (farm.getFarmerCount() / farm.getSize() < 0.1
+                || farm.getMoney() >= ACRE_COST * 1.25) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Logic to decide if farmer should be hired
+     * @return true if farmer should be hired
+     */
+    private boolean shouldHireFarmer() {
+        //if farmer coverage bonus falls below 0.5
+        if (farmerCoverageBonus() < 0.10) {
+            return true;
+        }
+        else
+            return false;
+    }
+    
+    /**
+     * 
+     * @return double a multiplier for coverage bonus
+     */
+    private double farmerCoverageBonus() {
+        double d = farm.getFarmerCount() / farm.getAcreage() / 50;
+        return d;
+    }
+    
+    /**
+     * Increase harvest price for animals (a multiplier)
+     * @return double a multiplier for animal sale
+     */
+    private double animalHarvestBonus() {
+        return numberOfAnimalFarmers() / numberOfAnimals() / 25;
+    }
+    
+    /**
+     * Increase harvest price for crops (a multiplier)
+     * @return double a multiplier for crop sale
+     */
+    private double cropHarvestBonues() {
+        return numberOfCropFarmers() / numberOfCrops() / 25;
+    }
+    
+    /**
+     * Increase sale price of all commodities (a multiplier) 
+     * @return double a multiplier for sale price
+     */
+    private double assetSaleBonus() {
+        return numberOfMerchantFarmers() / farm.getAcreage() / 25;
+    }
+    
+    /**
+     * Increase odds of animal survival when healing
+     * @return
+     */
+    private double veterinaryBonus() {
+        return numberOfVeterinaryFarmers() / numberOfAnimals() / 25;
+    }
+    
+    /**
+     * Increse odds of healing crops
+     * @return
+     */
+    private double cropHealBonus() {
+        return numberOfCropFarmers() / numberOfCrops() / 15.0;
+    }
+    
+    /**
+     * Returns number of living animals on the farm
+     * @return
+     */
+    private int numberOfAnimals() {
+        int num = 0;
+        ArrayList<Asset> list = farm.getAssetList();
+        for(Asset a : list) {
+            if (a instanceof Animal) {
+                if(a.isAlive()) {
+                    num++;
+                }
+            }
+        }
+        return num;
+    }
+    
+    /**
+     * Returns the number of living crops on the farm
+     * @return
+     */
+    private int numberOfCrops() {
+        int num = 0;
+        ArrayList<Asset> list = farm.getAssetList();
+        for(Asset a : list) {
+            if (a instanceof Crop) {
+                if(a.isAlive()) {
+                    num++;
+                }
+            }
+        }
+        return num;
+    }
+    
+    private int numberOfAnimalFarmers() {
+        int num = 0;
+        ArrayList<Farmer> list = farm.getFarmerList();
+        for(Farmer f : list) {
+            if (f.getFarmerKind().equals(FarmerKind.ANIMAL)) {
+                num++;
+            }
+        }
+        return num;
+    }
+    
+    private int numberOfCropFarmers() {
+        int num = 0;
+        ArrayList<Farmer> list = farm.getFarmerList();
+        for(Farmer f : list) {
+            if (f.getFarmerKind().equals(FarmerKind.CROPS)) {
+                num++;
+            }
+        }
+        return num;
+    }
+    
+    private int numberOfVeterinaryFarmers() {
+        int num = 0;
+        ArrayList<Farmer> list = farm.getFarmerList();
+        for(Farmer f : list) {
+            if (f.getFarmerKind().equals(FarmerKind.VETERINARY)) {
+                num++;
+            }
+        }
+        return num;
+    }
+    
+    private int numberOfMerchantFarmers() {
+        int num = 0;
+        ArrayList<Farmer> list = farm.getFarmerList();
+        for(Farmer f : list) {
+            if (f.getFarmerKind().equals(FarmerKind.MERCHANT)) {
+                num++;
+            }
+        }
+        return num;
+    }
+    
 }

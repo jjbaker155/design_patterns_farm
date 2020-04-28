@@ -17,7 +17,7 @@ public abstract class Animal extends Asset{
     //age of animal -> used to determine juvenile/adult
     private int age;
     //chance to procreate
-    private double procreateChance;
+    //private double procreateChance;
     
     /**
      * Sets required land, and base profit per animal
@@ -26,7 +26,8 @@ public abstract class Animal extends Asset{
      */
     public Animal(double procreate, int cost, int profit, double land, double diseaseDeathRate) {
         super(cost, profit, land, diseaseDeathRate);
-        procreateChance = procreate;
+        //procreateChance = procreate;
+        age = 0;
     }
     
     /**
@@ -42,7 +43,7 @@ public abstract class Animal extends Asset{
      * @param p chance to procreate
      */
     protected void setChanceToProcreate(double p) {
-        procreateChance = p;
+        //procreateChance = p;
     }
     
     /**

@@ -80,8 +80,9 @@ public class Farm {
      * Returns list of farmers 
      * @return
      */
+    @SuppressWarnings("unchecked")
     public ArrayList<Farmer> getFarmerList(){
-        return farmers;
+        return (ArrayList<Farmer>) farmers.clone();
     }
     
     /**

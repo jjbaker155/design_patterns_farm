@@ -160,7 +160,4 @@ public class FarmTest {
         Farm myFarm = Farm.makeFarm();
         assertTrue(myFarm instanceof Farm);
     }
-    
-    
-    
 }

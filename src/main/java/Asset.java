@@ -9,9 +9,7 @@ import java.util.Random;
 import exceptions.AssetAlreadyDeadException;
 
 public abstract class Asset {
-    
-    //public enum AssetKind {CATTLE, CHICKEN, SHEEP, DAIRYCOW, CORN, SOY}
-    
+        
     //How many acres does it take up
     private double landNeeded;
     //how much revenue produced in its cycle
@@ -34,51 +32,7 @@ public abstract class Asset {
         profit = p;
         diseaseDeathRate = deathRate;
     }
-    
-    /**
-     * Use this method to return a random asset type
-     * @return
-     */
-    /*
-    public static Asset createRandomAsset() {
-        int assetNum = rand.nextInt(AssetKind.values().length);
-        return createAsset(assetNum);
-    }
-    
-    /**
-     * Pass an integer to this method to create a Farm Asset ->
-     * 0:Steer 1:Chicken 2:Sheep 3:DairyCow 4:Corn 5:Soy
-     * @param num
-     * @return
-     */
-    /*
-    public static Asset createAsset(int num) {
-        if(num < 0 || num > AssetKind.values().length-1) {
-            return null;
-        }
-        if(num == AssetKind.CATTLE.ordinal()) {
-            return new Cattle();
-        }
-        if(num == AssetKind.CHICKEN.ordinal()) {
-            return new Chicken();
-        }
-        if(num == AssetKind.SHEEP.ordinal()) {
-            return new Sheep();
-        }
-        if(num == AssetKind.DAIRYCOW.ordinal()) {
-            return new DairyCow();
-        }
-        if(num == AssetKind.CORN.ordinal()) {
-            return new Corn();
-        }
-        if(num == AssetKind.SOY.ordinal()) {
-            return new Soy();
-        }
-        return null;
-    }
-    */
-    
-    
+       
     /**
      *  Sets the amount of land this animal occupies
      * @param land needed as a double
