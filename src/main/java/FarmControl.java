@@ -71,5 +71,29 @@ public class FarmControl {
         
     }
     
+    public void runFarmCycle() {
+        runDay(farm);
+        runNight(farm);
+    }
+    
+    private void runDay(Farm farm) {
+        //collect revenue
+        //reorder dead assets (do not clear acreage)
+        //receive delivery of replacement assets on order (do not change acreage)
+        /*
+         * check money, farmers, acreage, assets, acreage capacity
+         * decide on purchases/hiring
+         * check for diseased assets
+         * attempt to cure disease
+         * change status to dead, or alive
+         */
+    }
+    
+    private void runNight(Farm farm) {
+        //clear dead assets
+        //chance for disease (one living asset per acre)
+        //chance for predator (one living asset per acre)
+    }
+    
     
 }

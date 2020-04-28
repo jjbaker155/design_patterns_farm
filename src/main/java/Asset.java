@@ -12,6 +12,8 @@ public abstract class Asset {
     private HarvestStrategy harvestStrategy;
     //disease death rate
     private double diseaseDeathRate;
+    //state context for this asset
+    private final AssetStateContext sc = new AssetStateContext();
     
     
     public Asset(int c, int p, double l, double deathRate) {
@@ -82,4 +84,17 @@ public abstract class Asset {
     public void harvest() {
         harvestStrategy.harvest(this);
     }
+    
+    /**
+     * TODO: May not need this.... 
+     * @return a state context to be utilized by control class
+     */
+    public AssetStateContext getStateContext() {
+        return sc;
+    }
+    
+    public void doDay() {
+        
+    }
+    
 }

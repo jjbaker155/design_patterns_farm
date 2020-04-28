@@ -14,12 +14,10 @@ public abstract class Animal extends Asset{
     private final int TIME_TO_MATURE = 3;
     //cycles to die
     private final int AGE_TO_DIE = 14;
-    //age of animal
+    //age of animal -> used to determine juvenile/adult
     private int age;
     //chance to procreate
     private double procreateChance;
-    //A state context to dictate behaviors
-    private final AnimalStateContext stateContext = new AnimalStateContext();
     
     /**
      * Sets required land, and base profit per animal
@@ -60,14 +58,6 @@ public abstract class Animal extends Asset{
      */
     public int getAge() {
         return age;
-    }
-    
-    /**
-     *  
-     * @return a state context to be utilized by control class
-     */
-    public AnimalStateContext getStateContext() {
-        return stateContext;
     }
     
     
