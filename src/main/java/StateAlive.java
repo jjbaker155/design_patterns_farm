@@ -7,9 +7,13 @@ public class StateAlive implements AssetState{
     }
 
     @Override
-    public void dailyActions(AssetStateContext sc, Asset c) {
-        // TODO Auto-generated method stub
-        
+    public boolean isAlive() {
+        return true;
+    }
+
+    @Override
+    public boolean isDiseased() {
+        return false;
     }
 
 }

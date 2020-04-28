@@ -1,5 +1,9 @@
 package main.java;
 
 public interface AssetState {
-    public void dailyActions(AssetStateContext sc, Asset c);
+    final static FarmControl fc = FarmControl.createFarmControl();
+    
+    boolean isAlive();
+    boolean isDiseased();
+    
 }

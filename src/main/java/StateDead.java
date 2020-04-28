@@ -1,20 +1,19 @@
 package main.java;
 
-public class StateDiseased implements AssetState {
+public class StateDead implements AssetState{
 
-    public StateDiseased() {
+    public StateDead() {
         // TODO Auto-generated constructor stub
     }
 
     @Override
     public boolean isAlive() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isDiseased() {
-        // TODO Auto-generated method stub
-        return true;
+        return false;
     }
-    
+
 }

@@ -51,4 +51,16 @@ public class FarmerControl {
         return new Farmer(k);
     }
     
+    public void runCycle() {
+        
+    }
+    
+    public void runDay() {
+        
+    }
+    
+    public void runNight() {
+        
+    }
+    
 }

@@ -1,5 +1,7 @@
 package main.java;
 
+import exceptions.AssetAlreadyDeadException;
+
 public abstract class Asset {
     
     //How many acres does it take up
@@ -93,8 +95,36 @@ public abstract class Asset {
         return sc;
     }
     
-    public void doDay() {
-        
+    public boolean isAlive() {
+        return sc.isAlive();
+    }
+    
+    public boolean isDiseased() {
+        return sc.isDiseased();
+    }
+    
+    /**
+     * Set state of asset to diseased
+     * @throws AssetAlreadyDeadException Asset is already dead. You cannot change state
+     */
+    public void setDiseased() throws AssetAlreadyDeadException {
+        sc.setState(new StateDiseased());
+    }
+    
+    /**
+     * Set state of the asset to dead
+     * @throws AssetAlreadyDeadException Asset is already dead. You cannot change state
+     */
+    public void setDead() throws AssetAlreadyDeadException{
+        sc.setState(new StateDead());
+    }
+    
+    /**
+     * Sets the state of the asset to alive
+     * @throws AssetAlreadyDeadException Asset is already dead. You cannot change state
+     */
+    public void setAlive() throws AssetAlreadyDeadException {
+        sc.setState(new StateAlive());
     }
     
 }
