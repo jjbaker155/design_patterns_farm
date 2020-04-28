@@ -183,4 +183,16 @@ public class Farm {
         return currentMoney;
     }
     
+    @SuppressWarnings("unchecked")
+    public ArrayList<Asset> getAssetList() {
+        return (ArrayList<Asset>) assets.clone();
+    }
+    
+    public Asset getAssetByIndex(int index) {
+        return assets.get(index);
+    }
+    
+    public Asset removeAssetByIndex(int index) {
+        return assets.remove(index);
+    }
 }

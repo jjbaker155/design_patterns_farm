@@ -41,7 +41,5 @@ public class FarmControlTest {
         farmControl.hireRandomFarmer();
         assertEquals(4, farm.getFarmerCount());
     }
-    
-    
 
 }

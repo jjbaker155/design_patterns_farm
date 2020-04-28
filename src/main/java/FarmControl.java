@@ -15,6 +15,7 @@ public class FarmControl {
     
     //defaults
     public final static int INITIAL_FARMERS = 3;
+    public final static int INITIAL_ASSETS = 4;
     public final static double MAX_ACREAGE = 100;
     public final static int MAX_MONEY = 10000;
     public final static int INITIAL_MONEY = 1000;
@@ -60,10 +61,12 @@ public class FarmControl {
     }
     
     /**
-     * Generate 4 random initial assets for your farm
+     * Generate initial assets for your farm
      */
     public void generateInitialAssets(Farm f) {
-        
+        for (int i = 0; i < INITIAL_ASSETS; i++) {
+            farm.addAsset(Asset.createRandomAsset());
+        }
     }
     
     /**
