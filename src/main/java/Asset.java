@@ -10,7 +10,7 @@ import exceptions.AssetAlreadyDeadException;
 
 public abstract class Asset {
     
-    public enum AssetKind {STEER, CHICKEN, SHEEP, DAIRYCOW, CORN, SOY}
+    public enum AssetKind {CATTLE, CHICKEN, SHEEP, DAIRYCOW, CORN, SOY}
     
     //How many acres does it take up
     private double landNeeded;
@@ -25,7 +25,7 @@ public abstract class Asset {
     //state context for this asset
     private final AssetStateContext sc = new AssetStateContext();
     
-    Random rand = new Random();
+    static Random rand = new Random();
     
     
     public Asset(int c, int p, double l, double deathRate) {
@@ -40,17 +40,39 @@ public abstract class Asset {
      * @return
      */
     public static Asset createRandomAsset() {
-        return new DairyCow();
+        int assetNum = rand.nextInt(AssetKind.values().length);
+        return createAsset(assetNum);
     }
     
     /**
      * Pass an integer to this method to create a Farm Asset ->
-     * 1:Steer 2:Chicken 3:Sheep 4:DairyCow 5:Corn 6:Soy
+     * 0:Steer 1:Chicken 2:Sheep 3:DairyCow 4:Corn 5:Soy
      * @param num
      * @return
      */
     public static Asset createAsset(int num) {
-        return new DairyCow();
+        if(num < 0 || num > AssetKind.values().length-1) {
+            return null;
+        }
+        if(num == AssetKind.CATTLE.ordinal()) {
+            return new Cattle();
+        }
+        if(num == AssetKind.CHICKEN.ordinal()) {
+            return new Chicken();
+        }
+        if(num == AssetKind.SHEEP.ordinal()) {
+            return new Sheep();
+        }
+        if(num == AssetKind.DAIRYCOW.ordinal()) {
+            return new DairyCow();
+        }
+        if(num == AssetKind.CORN.ordinal()) {
+            return new Corn();
+        }
+        if(num == AssetKind.SOY.ordinal()) {
+            return new Soy();
+        }
+        return null;
     }
     
     
