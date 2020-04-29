@@ -30,6 +30,10 @@ public class AssetStateContext {
     }
     
     public boolean isDiseased() {
-        return myState.isDiseased();
+        return myState.isSick();
+    }
+    
+    public boolean isDead() {
+        return myState.isDead();
     }
 }

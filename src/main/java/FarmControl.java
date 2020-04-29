@@ -69,6 +69,17 @@ public class FarmControl {
     }
     
     /**
+     * Private constructor for making test FarmControl
+     * @param boolean to indicate using this contructor
+     */
+    private FarmControl(boolean test) {
+        farm = Farm.makeTestFarm();
+        af = AssetFactory.makeAssetFactory();
+        day = 0;
+        resetCycleReports();
+    }
+    
+    /**
      * Create singleton FarmControl
      * @return FarmControl
      */
@@ -81,6 +92,16 @@ public class FarmControl {
         return farmControlSoleInstance;
     }
     
+    /**
+     * This method is for unit testing ONLY!
+     * Invoking it will DESTROY and replace the singleton FarmControl
+     * @return
+     */
+    public static FarmControl createTestFarmControl() {
+        farmControlSoleInstance = new FarmControl(true);
+        farmControlSoleInstance.attachFarmerControl();
+        return farmControlSoleInstance;
+    }    
     
     /**
      * Generate 3 random farmer types for your farm
@@ -94,8 +115,9 @@ public class FarmControl {
     
     /**
      * Generate initial assets for your farm
+     * @throws AssetAlreadyDeadException 
      */
-    public void generateInitialAssets(Farm f) {
+    public void generateInitialAssets(Farm f) throws AssetAlreadyDeadException {
         for (int i = 0; i < INITIAL_ASSETS; i++) {
             farm.addAsset(af.createRandomAsset());
         }
@@ -113,14 +135,17 @@ public class FarmControl {
      * Add a random asset to your farm
      * @param Farm to add the asset to
      * @param String representing asset type
+     * @throws AssetAlreadyDeadException 
      */
-    public void purchaseRandomAsset() {
+    public void purchaseRandomAsset() throws AssetAlreadyDeadException {
         Asset a = af.createRandomAsset();
         if(farm.getSpaceAvailable() < a.getLandNeeded()) {
             buyAcre();
         }
         farm.addAsset(a);
     }
+    
+    
     
     private void runDay() throws AssetAlreadyDeadException {
         int totalCropEarnings = harvestCrops();
@@ -139,12 +164,6 @@ public class FarmControl {
         //clear dead assets
         //chance for disease (one living asset per acre)
         //chance for predator (one living asset per acre)
-    }
-    
-    
-    //TODO: write after state pattern is put together
-    public void predatorAttack() {
-        
     }
     
     /**
@@ -213,10 +232,11 @@ public class FarmControl {
             dayReportAdd("Harvest " + a.getTypeName() + "\n" + "Harvest Type:"
             + harvestType + "Value: " + assetValue);
         }
-        
-        
-        
-        return 0;
+        dayReportAdd("Animal farmer bonus = " + bonus + "\n");
+        dayReportAdd("Merchant farmer bonus = " + merchantBonus + "\n");
+        double multiplier = bonus + merchantBonus + 1;
+        double p = proceeds * multiplier;
+        return (int) p;
     }
     
     /**
@@ -433,7 +453,7 @@ public class FarmControl {
         ArrayList<Asset> assetList = farm.getAssetList();
         ArrayList<Crop> harvestList = new ArrayList<Crop>();
         for (Asset a : assetList) {
-            if ((a instanceof Crop && a.getHarvestDays() == 0) && a.isAlive()) {
+            if (a.getHarvestDays() <= 0 && a instanceof Crop && a.isAlive()) {
                 harvestList.add((Crop) a);
             }
         }
@@ -449,7 +469,6 @@ public class FarmControl {
             }
         }
         return harvestList;
-    }
-    
+    }    
     
 }

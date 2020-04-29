@@ -12,7 +12,14 @@ public class StateDead implements AssetState{
     }
 
     @Override
-    public boolean isDiseased() {
+    public boolean isDead() {
+        // TODO Auto-generated method stub
+        return true;
+    }
+
+    @Override
+    public boolean isSick() {
+        // TODO Auto-generated method stub
         return false;
     }
 

@@ -12,7 +12,13 @@ public class StateAlive implements AssetState{
     }
 
     @Override
-    public boolean isDiseased() {
+    public boolean isDead() {
+        return false;
+    }
+
+    @Override
+    public boolean isSick() {
+        // TODO Auto-generated method stub
         return false;
     }
 

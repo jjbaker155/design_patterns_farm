@@ -22,6 +22,13 @@ public class FarmerControl {
     }
     
     /**
+     * Private constructor for making test FarmerControl
+     */
+    private FarmerControl(FarmControl farmControl, boolean test) {
+        this.farmControl = farmControl;
+    }
+    
+    /**
      * This method will return a new FarmerControl if one does not already exist, and will return
      * the existing one if it does. This prevents the existence of more than one FC in the system
      * @return a FarmerControl object
@@ -32,6 +39,17 @@ public class FarmerControl {
         }
         return farmerControlSoleInstance;
     }
+    
+    /**
+     * This method will return a new FarmerControl for unit test ONLY
+     * This will DESTROY the existing FarmerControl
+     * @return a FarmerControl object
+     */
+    public static FarmerControl createTestFarmerControl(FarmControl farmControl) {
+        farmerControlSoleInstance = new FarmerControl(farmControl, true);
+        return farmerControlSoleInstance;
+    }
+    
     
     /**
      * Creates and returns farmer of a random kind

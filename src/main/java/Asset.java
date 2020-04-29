@@ -19,7 +19,7 @@ public abstract class Asset {
     //disease death rate
     private double diseaseDeathRate;
     //state context for this asset
-    private final AssetStateContext sc = new AssetStateContext();
+    private AssetStateContext sc;
     //harvest strategy
     private final HarvestStrategy HARVEST_STRATEGY;
     //age of asset in days
@@ -34,6 +34,7 @@ public abstract class Asset {
         landNeeded = l;
         cost = c;
         profit = p;
+        sc = new AssetStateContext();
         diseaseDeathRate = deathRate;
         HARVEST_STRATEGY = hs;
         harvestDays = FarmControl.DEFAULT_HARVEST_DAYS;
@@ -131,7 +132,7 @@ public abstract class Asset {
      * @throws AssetAlreadyDeadException Asset is already dead. You cannot change state
      */
     public void setAlive() throws AssetAlreadyDeadException {
-        if(sc.isDiseased()) {
+        if(sc.isDead()) {
             throw new AssetAlreadyDeadException();
         }
         sc.setState(new StateAlive());

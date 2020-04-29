@@ -12,6 +12,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import exceptions.AssetAlreadyDeadException;
 import exceptions.FarmHasWonException;
 import exceptions.FarmIsBankruptException;
 
@@ -120,9 +121,10 @@ public class FarmTest {
     
     /**
      * Tests addAsset(). Also tests removeAssetByIndex()
+     * @throws AssetAlreadyDeadException 
      */
     @Test
-    public void mTestAddAsset() {
+    public void mTestAddAsset() throws AssetAlreadyDeadException {
         Asset myAsset = af.createRandomAsset();
         farm.addAsset(myAsset);
         assertEquals(farm.removeAssetByIndex(0), myAsset);
@@ -130,16 +132,17 @@ public class FarmTest {
     
     /**
      * Tests removeAsset()
+     * @throws AssetAlreadyDeadException 
      */
     @Test
-    public void oTestRemoveAsset() {
+    public void oTestRemoveAsset() throws AssetAlreadyDeadException {
         Asset myAsset = af.createRandomAsset();
         farm.addAsset(myAsset);
         assertTrue(farm.removeAsset(myAsset));
     }
     
     @Test
-    public void xTestGetAssetList() {
+    public void xTestGetAssetList() throws AssetAlreadyDeadException {
         Asset myAsset = af.createAsset(1);
         farm.addAsset(myAsset);
         ArrayList<Asset> list = farm.getAssetList();
@@ -147,10 +150,11 @@ public class FarmTest {
     }
     
     /**
+     * @throws AssetAlreadyDeadException 
      * 
      */
     @Test
-    public void yTestGetAssetByIndex() {
+    public void yTestGetAssetByIndex() throws AssetAlreadyDeadException {
         Asset myAsset = af.createAsset(0);
         farm.addAsset(myAsset);
         assertEquals(farm.getAssetByIndex(0), myAsset);

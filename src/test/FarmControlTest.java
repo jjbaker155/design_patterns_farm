@@ -10,7 +10,11 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import exceptions.AssetAlreadyDeadException;
 import main.java.Asset;
+import main.java.AssetFactory;
+import main.java.Cattle;
+import main.java.Corn;
 import main.java.Farm;
 import main.java.FarmControl;
 import main.java.FarmerControl;
@@ -23,12 +27,13 @@ public class FarmControlTest {
     //private FarmControl farmControl;
     //private FarmerControl farmerControl;
     private FarmControl farmControl = FarmControl.createFarmControl();
-    private FarmerControl farmerControl = FarmerControl.createFarmerControl(farmControl);
     private Farm farm = farmControl.getFarm();
+    private AssetFactory af = AssetFactory.makeAssetFactory();
     
     @Before
     public void setup() {
-        
+        farmControl = FarmControl.createTestFarmControl();
+        farm = farmControl.getFarm();
     }   
 
     /**
@@ -36,7 +41,7 @@ public class FarmControlTest {
      */
     @Test
     public void test1InitialFarmersCount() {
-        assertEquals(3, farm.getFarmerCount());
+        assertEquals(0, farm.getFarmerCount());
     }
     
     /**
@@ -45,15 +50,16 @@ public class FarmControlTest {
     @Test
     public void test2HireRandomFarmer() {
         farmControl.hireRandomFarmer();
-        assertEquals(4, farm.getFarmerCount());
+        assertEquals(1, farm.getFarmerCount());
     }
     
     /**
      * Test to see if initial assets are generated properly
      * Should have 4 assets after this test
+     * @throws AssetAlreadyDeadException 
      */
     @Test
-    public void test3GenerateInitialAssets() {
+    public void test3GenerateInitialAssets() throws AssetAlreadyDeadException {
         farmControl.generateInitialAssets(farm);
         ArrayList<Asset> assetList = farmControl.getFarm().getAssetList();
         assertTrue(assetList.get(FarmControl.INITIAL_ASSETS - 1) instanceof Asset);
@@ -62,12 +68,13 @@ public class FarmControlTest {
     /**
      * Test to see if purchase a random asset works
      * Should have 5 assets after this test
+     * @throws AssetAlreadyDeadException 
      */
     @Test
-    public void test4purchaseRandomAsset() {
+    public void test4purchaseRandomAsset() throws AssetAlreadyDeadException {
         farmControl.purchaseRandomAsset();
         ArrayList<Asset> assetList = farmControl.getFarm().getAssetList();
-        assertTrue(assetList.get(4) instanceof Asset);
+        assertTrue(assetList.get(0) instanceof Asset);
     }
     
     /**
@@ -83,17 +90,24 @@ public class FarmControlTest {
     /**
      * Test to see if the state of an asset changes to StateAlive
      * after the asset is re-ordered
+     * @throws AssetAlreadyDeadException 
      */
     @Test
-    public void test6reOrderState() {
+    public void test6reOrderState() throws AssetAlreadyDeadException {
+        farmControl.generateInitialAssets(farm);
         Asset a = farm.getAssetByIndex(0);
         a.getStateContext().setState(new StateDead());
         farmControl.reOrder(a);
         assertTrue(a.getStateContext().getState() instanceof StateAlive);
     }
     
+    /**
+     * Test to ensure re-ordering an asset will work
+     * @throws AssetAlreadyDeadException 
+     */
     @Test
-    public void test7reOrderAge() {
+    public void test7reOrderAge() throws AssetAlreadyDeadException {
+        farmControl.generateInitialAssets(farm);
         Asset a = farm.getAssetByIndex(0);
         a.getStateContext().setState(new StateDead());
         a.setAge(2);
@@ -102,8 +116,23 @@ public class FarmControlTest {
     }
     
     @Test
-    public void test8ShouldHireFarmer() {
-        //might not do this test - do day test instead?
+    public void test8HarvestCrops() throws AssetAlreadyDeadException {
+        Corn corn = (Corn) af.createAsset(4);
+        corn.setAge(3);
+        corn.setHarvestDays(0);
+        farm.addAsset(corn);
+        int earnings = farmControl.harvestCrops();
+        assertTrue(earnings > 0);
+    }
+    
+    @Test
+    public void test9HarvestAnimals() throws AssetAlreadyDeadException {
+        Cattle cattle = (Cattle) af.createAsset(0);
+        cattle.setAge(3);
+        cattle.setHarvestDays(0);
+        farm.addAsset(cattle);
+        int earnings = farmControl.harvestAnimals();
+        assertTrue(earnings > 0);
     }
     
     

@@ -42,6 +42,18 @@ public class Farm {
     }
     
     /**
+     * Private constructor foe making test Farm
+     * @param test
+     */
+    private Farm (boolean test) {
+        farmers = new ArrayList<Farmer>();
+        assets = new ArrayList<Asset>();
+        acres = FarmControl.STARTING_ACREAGE;
+        spaceAvailable = acres;
+        currentMoney = FarmControl.INITIAL_MONEY;
+    }
+    
+    /**
      * Makes the only farm
      * @param double a acres
      * @return Farm
@@ -52,14 +64,15 @@ public class Farm {
         }
         return farmSoleInstance;
     }
-    
     /**
      * Makes a test farm (FOR UNIT TESTING ONLY)
+     * This will destroy the existing singleton Farm!
      * @param double a acres
      * @return Farm
      */
     public static Farm makeTestFarm() {
-        return new Farm();
+        farmSoleInstance = new Farm(true);
+        return farmSoleInstance;
     }
     
     /**

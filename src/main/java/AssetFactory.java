@@ -2,6 +2,8 @@ package main.java;
 
 import java.util.Random;
 
+import exceptions.AssetAlreadyDeadException;
+
 public class AssetFactory {
     
     public enum AssetKind {CATTLE, HOG, SHEEP, DAIRYCOW, CORN, SOY}
@@ -32,37 +34,43 @@ public class AssetFactory {
      * 0:Cattle 1:Hog 2:Sheep 3:DairyCow 4:Corn 5:Soy
      * @param num
      * @return
+     * @throws AssetAlreadyDeadException 
      */
-    public Asset createAsset(int num) {
+    public Asset createAsset(int num) throws AssetAlreadyDeadException {
+        Asset a = null;
         if(num < 0 || num > AssetKind.values().length-1) {
             return null;
         }
         if(num == AssetKind.CATTLE.ordinal()) {
-            return new Cattle();
+            a = new Cattle();
         }
         if(num == AssetKind.HOG.ordinal()) {
-            return new Hog();
+            a = new Hog();
         }
         if(num == AssetKind.SHEEP.ordinal()) {
-            return new Sheep();
+            a = new Sheep();
         }
         if(num == AssetKind.DAIRYCOW.ordinal()) {
-            return new DairyCow();
+            a = new DairyCow();
         }
         if(num == AssetKind.CORN.ordinal()) {
-            return new Corn();
+            a = new Corn();
         }
         if(num == AssetKind.SOY.ordinal()) {
-            return new Soy();
+            a = new Soy();
         }
-        return null;
+        if(a != null) {
+            a.setAliveReorder();
+        }
+        return a;
     }
     
     /**
      * Create and return a random asset
      * @return
+     * @throws AssetAlreadyDeadException 
      */
-    public Asset createRandomAsset() {
+    public Asset createRandomAsset() throws AssetAlreadyDeadException {
         int assetNum = rand.nextInt(AssetKind.values().length);
         return createAsset(assetNum);
     }
