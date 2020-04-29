@@ -13,8 +13,16 @@ public class AssetStateContext {
      * Sets the state of the asset that holds this context object
      * @param newState the new state
      */
-    public void setState(AssetState newState){
+    public void setState(AssetState newState) {
         myState = newState;
+    }
+    
+    /**
+     * Returns the current AssetState
+     * @return current state of the asset
+     */
+    public AssetState getState() {
+        return myState;
     }
     
     public boolean isAlive() {

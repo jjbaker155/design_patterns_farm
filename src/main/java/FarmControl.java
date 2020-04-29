@@ -105,11 +105,11 @@ public class FarmControl {
      * @param String representing asset type
      */
     public void purchaseRandomAsset() {
-        Asset a = AssetFactory.createRandomAsset();
-        double landNeeded = a.getLandNeeded();
-        if(landNeeded < a.getLandNeeded()) {
+        Asset a = af.createRandomAsset();
+        if(farm.getSpaceAvailable() < a.getLandNeeded()) {
             buyAcre();
         }
+        farm.addAsset(a);
     }
     
     private void runDay() {
@@ -159,7 +159,6 @@ public class FarmControl {
         ArrayList<Asset> list = farm.getAssetList();
         for(Asset a : list) {
             if (a instanceof Crop) {
-                //harvest
                 //add to proceeds
             }
         }
@@ -179,12 +178,9 @@ public class FarmControl {
      * Reorder the animal. More formally, it sets it to alive and deducts the cost
      * @param a
      */
-    private void reOrder(Asset a) {
+    public void reOrder(Asset a) {
         a.setAliveReorder();
-        if(a instanceof Animal) {
-           Animal animal = (Animal) a;
-           animal.setAge(0);
-        }
+        a.setAge(0);
         farm.deductMoney(a.getCost());
     }
     

@@ -22,6 +22,8 @@ public abstract class Asset {
     private final AssetStateContext sc = new AssetStateContext();
     //harvest strategy
     private final HarvestStrategy HARVEST_STRATEGY;
+    //age of asset in days
+    private int age;
     
     static Random rand = new Random();
     
@@ -83,9 +85,10 @@ public abstract class Asset {
     
     /**
      * Calls harvest() from the appropriate HarvestStrategy object 
+     * @throws AssetAlreadyDeadException 
      */
-    public void harvest() {
-        HARVEST_STRATEGY.harvest(this);
+    public int harvest() throws AssetAlreadyDeadException {
+        return HARVEST_STRATEGY.harvest(this);
     }
     
     /**
@@ -135,4 +138,18 @@ public abstract class Asset {
         sc.setState(new StateAlive());
     }
     
+    public void setAge(int a) {
+        age = a;
+    }
+    
+    public int getAge() {
+        return age;
+    }
+    
+    /**
+     * Increase age of the asset by 1 day
+     */
+    public void incrementAge() {
+        age++;
+    }
 }

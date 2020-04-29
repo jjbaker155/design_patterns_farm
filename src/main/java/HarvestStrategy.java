@@ -1,5 +1,7 @@
 package main.java;
 
+import exceptions.AssetAlreadyDeadException;
+
 public interface HarvestStrategy {
-    public void harvest(Asset a);
+    public int harvest(Asset a) throws AssetAlreadyDeadException;
 }

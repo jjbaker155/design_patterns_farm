@@ -22,9 +22,10 @@ public class RegularHarvest implements HarvestStrategy {
     }
 
     @Override
-    public void harvest(Asset a) {
+    public int harvest(Asset a) {
         //change state of a 
         //other action (return money, or maybe that is handled by control)
+        return 0;
     }
 
 }

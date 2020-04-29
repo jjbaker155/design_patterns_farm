@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class AssetFactory {
     
-    public enum AssetKind {CATTLE, CHICKEN, SHEEP, DAIRYCOW, CORN, SOY}
+    public enum AssetKind {CATTLE, HOG, SHEEP, DAIRYCOW, CORN, SOY}
     
     //Singleton
     private static AssetFactory theOnlyAssetFactory;
@@ -29,19 +29,19 @@ public class AssetFactory {
     
     /**
      * Pass an integer to this method to create a Farm Asset ->
-     * 0:Steer 1:Chicken 2:Sheep 3:DairyCow 4:Corn 5:Soy
+     * 0:Cattle 1:Hog 2:Sheep 3:DairyCow 4:Corn 5:Soy
      * @param num
      * @return
      */
-    public static Asset createAsset(int num) {
+    public Asset createAsset(int num) {
         if(num < 0 || num > AssetKind.values().length-1) {
             return null;
         }
         if(num == AssetKind.CATTLE.ordinal()) {
             return new Cattle();
         }
-        if(num == AssetKind.CHICKEN.ordinal()) {
-            return new Chicken();
+        if(num == AssetKind.HOG.ordinal()) {
+            return new Hog();
         }
         if(num == AssetKind.SHEEP.ordinal()) {
             return new Sheep();
@@ -62,7 +62,7 @@ public class AssetFactory {
      * Create and return a random asset
      * @return
      */
-    public static Asset createRandomAsset() {
+    public Asset createRandomAsset() {
         int assetNum = rand.nextInt(AssetKind.values().length);
         return createAsset(assetNum);
     }
