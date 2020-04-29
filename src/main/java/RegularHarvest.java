@@ -1,8 +1,8 @@
 package main.java;
 
 public class RegularHarvest implements HarvestStrategy {
-
-    //this staregy is also a singleton
+    
+    //this strategy is also a singleton
     private static RegularHarvest rhSingleInstance;
     
     private RegularHarvest() {
@@ -20,12 +20,23 @@ public class RegularHarvest implements HarvestStrategy {
         }
         return rhSingleInstance;
     }
-
+    
+    /**
+     * Harvest the asset
+     * @param Asset to harvest
+     * @return int the amount of money earned
+     */
     @Override
     public int harvest(Asset a) {
-        //change state of a 
-        //other action (return money, or maybe that is handled by control)
-        return 0;
+        //reset harvest days
+        a.setHarvestDays(FarmControl.DEFAULT_HARVEST_DAYS);
+        //return sale amount
+        return a.getProfit();
     }
 
+    @Override
+    public boolean isHarvestTerminal() {
+        return false;
+    }
+    
 }

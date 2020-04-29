@@ -24,6 +24,8 @@ public abstract class Asset {
     private final HarvestStrategy HARVEST_STRATEGY;
     //age of asset in days
     private int age;
+    //days until next harvest
+    private int harvestDays;
     
     static Random rand = new Random();
     
@@ -34,6 +36,7 @@ public abstract class Asset {
         profit = p;
         diseaseDeathRate = deathRate;
         HARVEST_STRATEGY = hs;
+        harvestDays = FarmControl.DEFAULT_HARVEST_DAYS;
     }
        
     /**
@@ -134,8 +137,12 @@ public abstract class Asset {
         sc.setState(new StateAlive());
     }
     
+    /**
+     * Set asset to alive in the case of a reorder
+     */
     public void setAliveReorder() {
         sc.setState(new StateAlive());
+        setAge(0);
     }
     
     public void setAge(int a) {
@@ -151,5 +158,51 @@ public abstract class Asset {
      */
     public void incrementAge() {
         age++;
+    }
+    
+    public int getHarvestDays() {
+        return harvestDays;
+    }
+    
+    public void setHarvestDays(int hd) {
+        harvestDays = hd;
+    }
+    
+    public void incrementHarvestDays() {
+        harvestDays--;
+    }
+    
+    /**
+     * Get a String representation of the animal name
+     * @return
+     */
+    public String getTypeName() {
+        if (this instanceof Cattle) {
+            return "Cattle";
+        }
+        if (this instanceof Hog) {
+            return "Hog";
+        }
+        if (this instanceof Sheep) {
+            return "Sheep";
+        }
+        if (this instanceof DairyCow) {
+            return "Dairy Cow";
+        }
+        if (this instanceof Corn) {
+            return "Corn";
+        }
+        if (this instanceof Soy) {
+            return "Soy";
+        }
+        return null;
+    }
+    
+    /**
+     * Indicates whether or not harvesting this asset will kill it
+     * @return boolean true if terminal
+     */
+    public boolean isHarvestTerminal() {
+        return HARVEST_STRATEGY.isHarvestTerminal();
     }
 }

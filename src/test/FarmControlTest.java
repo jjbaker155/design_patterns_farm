@@ -101,5 +101,10 @@ public class FarmControlTest {
         assertEquals(a.getAge(), 0);
     }
     
+    @Test
+    public void test8ShouldHireFarmer() {
+        //might not do this test - do day test instead?
+    }
+    
     
 }

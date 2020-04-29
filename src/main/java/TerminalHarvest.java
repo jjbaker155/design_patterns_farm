@@ -22,13 +22,23 @@ public class TerminalHarvest implements HarvestStrategy {
         }
         return thSingleInstance;
     }
-
+    
+    /**
+     * Harvest the asset
+     * @param Asset to harvest
+     * @return int the amount of money earned
+     */
     @Override
     public int harvest(Asset a) throws AssetAlreadyDeadException {
-       // change a to perished
+        // change a to dead
         a.setDead();
-       // other action (return money, or maybe that is handled by control)
+        //return sale amount
         return a.getProfit();
+    }
+
+    @Override
+    public boolean isHarvestTerminal() {
+        return true;
     }
 
 }

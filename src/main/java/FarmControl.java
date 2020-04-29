@@ -38,11 +38,20 @@ public class FarmControl {
     private final static int FARMER_PER_DIEM = 50;
     //Farmer to Acre ratio
     private final static double FARMER_PURCHASE_TRIGGER = 0.4;
+    //days between harvests for renewable assets
+    public static final int DEFAULT_HARVEST_DAYS = 3;
+    //for report building
+    private final String REPORT_ITEM_SEPERATOR = "\n-------------------";
+    private final String REPORT_STAR_SEPERATOR = "\n*****************" + 
+    "*************";
     
     private Random rand;
     private Farm farm;
     private FarmerControl farmerControl;
     private int day;
+    
+    private StringBuilder dayReport;
+    private StringBuilder nightReport;
     
     private AssetFactory af;
     
@@ -56,6 +65,7 @@ public class FarmControl {
         farm = Farm.makeFarm();
         af = AssetFactory.makeAssetFactory();
         day = 0;
+        resetCycleReports();
     }
     
     /**
@@ -112,9 +122,11 @@ public class FarmControl {
         farm.addAsset(a);
     }
     
-    private void runDay() {
+    private void runDay() throws AssetAlreadyDeadException {
+        int totalCropEarnings = harvestCrops();
         
-        //collect revenue
+        
+        //harvest and collect
         //reorder dead assets (do not clear acreage)
         //try to heal
         //payroll
@@ -153,17 +165,58 @@ public class FarmControl {
     }
   
     
-    private int harvestCrop(Crop c) {
+    public int harvestCrops() throws AssetAlreadyDeadException {
+        dayReportAdd("Crop Harvest:\n" + REPORT_STAR_SEPERATOR);
         double bonus = cropHarvestBonus();
+        double merchantBonus = merchantFarmerBonus();
         int proceeds = 0;
-        ArrayList<Asset> list = farm.getAssetList();
-        for(Asset a : list) {
-            if (a instanceof Crop) {
-                //add to proceeds
+        ArrayList<Crop> list = getCropsForHarvest();
+        for(Crop c : list) {
+            dayReportAdd(REPORT_ITEM_SEPERATOR);
+            String harvestType;
+            if (c.isHarvestTerminal()) {
+                harvestType = " Terminal \n";
             }
+            else
+            {
+                harvestType = " Normal \n";
+            }
+            int assetValue = c.harvest(); 
+            proceeds += assetValue;
+            dayReportAdd("Harvest " + c.getTypeName() + "\n" + "Harvest Type:"
+            + harvestType + "Value: " + assetValue);
         }
-        //apply multiplier
-        return proceeds;
+        dayReportAdd("Crop farmer bonus = " + bonus + "\n");
+        dayReportAdd("Merchant farmer bonus = " + merchantBonus + "\n");
+        double multiplier = bonus + merchantBonus + 1;
+        double p = proceeds * multiplier;
+        return (int) p;
+    }
+    
+    public int harvestAnimals() throws AssetAlreadyDeadException {
+        double bonus = animalHarvestBonus();
+        double merchantBonus = merchantFarmerBonus();
+        int proceeds = 0;
+        ArrayList<Animal> list = getAnimalsForHarvest();
+        for(Animal a : list) {
+            dayReportAdd(REPORT_ITEM_SEPERATOR);
+            String harvestType;
+            if (a.isHarvestTerminal()) {
+                harvestType = " Terminal \n";
+            }
+            else
+            {
+                harvestType = " Normal \n";
+            }
+            int assetValue = a.harvest(); 
+            proceeds += assetValue;
+            dayReportAdd("Harvest " + a.getTypeName() + "\n" + "Harvest Type:"
+            + harvestType + "Value: " + assetValue);
+        }
+        
+        
+        
+        return 0;
     }
     
     /**
@@ -255,11 +308,19 @@ public class FarmControl {
     }
     
     /**
-     * Increse odds of healing crops
+     * Increase odds of healing crops
      * @return
      */
     private double cropHealBonus() {
         return numberOfCropFarmers() / numberOfCrops() / 15.0;
+    }
+    
+    /**
+     * 
+     * @return a % bonus for merchant farmer bonus
+     */
+    private double merchantFarmerBonus() {
+        return numberOfMerchantFarmers() * .05; 
     }
     
     /**
@@ -339,5 +400,56 @@ public class FarmControl {
         }
         return num;
     }
+    
+    /**
+     * Sets reports up for a new cycle
+     */
+    private void resetCycleReports() {
+        String dayInit = new String(REPORT_STAR_SEPERATOR + REPORT_STAR_SEPERATOR +
+                "\n" + "DayReport:\n\n");
+        dayReport = new StringBuilder(dayInit);
+        String nightInit = new String(REPORT_STAR_SEPERATOR + REPORT_STAR_SEPERATOR + 
+                "\n" + "NightReport:\n");
+        nightReport = new StringBuilder(nightInit);
+    }
+    
+    /**
+     * 
+     * @param String to add to report
+     */
+    public void dayReportAdd(String appendation) {
+        dayReport.append(appendation + "\n");
+    }
+    
+    /**
+     * 
+     * @param String to add to report
+     */
+    public void nightReportAdd(String appendation) {
+        nightReport.append(appendation + "\n");
+    }
+    
+    private ArrayList<Crop> getCropsForHarvest() {
+        ArrayList<Asset> assetList = farm.getAssetList();
+        ArrayList<Crop> harvestList = new ArrayList<Crop>();
+        for (Asset a : assetList) {
+            if ((a instanceof Crop && a.getHarvestDays() == 0) && a.isAlive()) {
+                harvestList.add((Crop) a);
+            }
+        }
+        return harvestList;
+    }
+    
+    private ArrayList<Animal> getAnimalsForHarvest() {
+        ArrayList<Asset> assetList = farm.getAssetList();
+        ArrayList<Animal> harvestList = new ArrayList<Animal>();
+        for (Asset a : assetList) {
+            if ((a instanceof Animal && a.getHarvestDays() == 0) && a.isAlive()) {
+                harvestList.add((Animal) a);
+            }
+        }
+        return harvestList;
+    }
+    
     
 }
