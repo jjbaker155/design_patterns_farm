@@ -17,13 +17,14 @@ public class Farm {
     private ArrayList<Farmer> farmers;
     //size of farm in square acres
     private double acres;
+    //amount of land currently available in sq acres
+    private double spaceAvailable;
     //list of assets
     private ArrayList<Asset> assets;
     //odds of a predator attack per acre 
     private static final double PREDATOR_CHANCE = .25;
     //amount of money
     private int currentMoney;
-    
     //the only farm - singleton
     private static Farm farmSoleInstance;
     
@@ -36,6 +37,7 @@ public class Farm {
         farmers = new ArrayList<Farmer>();
         assets = new ArrayList<Asset>();
         acres = FarmControl.STARTING_ACREAGE;
+        spaceAvailable = acres;
         currentMoney = FarmControl.INITIAL_MONEY;
     }
     
@@ -112,6 +114,7 @@ public class Farm {
      */
     public void addAcre() {
         acres = acres + 1.0;
+        spaceAvailable = spaceAvailable + 1.0;
     }
     
     /**
@@ -144,6 +147,7 @@ public class Farm {
     }
     
     public boolean addAsset(Asset a) {
+        spaceAvailable = spaceAvailable - a.getLandNeeded();
         return assets.add(a);
     }
     
@@ -158,14 +162,13 @@ public class Farm {
     
     /**
      * Deduct money. Throws exception if Farm is bankrupt.
-     * @param d
-     * @throws FarmIsBankruptException
+     * @param d amount of money to deduct
      */
-    public void deductMoney(int d) throws FarmIsBankruptException {
+    public void deductMoney(int d) {
         currentMoney -= d;
-        if (currentMoney < 0) {
-            throw new FarmIsBankruptException();
-        }
+        //if (currentMoney < 0) {
+        //    throw new FarmIsBankruptException();
+        //}
     }
     
     /**
@@ -195,5 +198,9 @@ public class Farm {
     
     public Asset removeAssetByIndex(int index) {
         return assets.remove(index);
+    }
+    
+    public double getSpaceAvailable() {
+        return spaceAvailable;
     }
 }

@@ -10,23 +10,18 @@ public abstract class Animal extends Asset{
 
     //how much revenue produced in a day
     private int producesProfit;
-    //cycles to mature
-    private final int TIME_TO_MATURE = 3;
     //cycles to die
-    private final int AGE_TO_DIE = 14;
+    public final int AGE_TO_DIE = 14;
     //age of animal -> used to determine juvenile/adult
     private int age;
-    //chance to procreate
-    //private double procreateChance;
     
     /**
      * Sets required land, and base profit per animal
      * @param l land
      * @param p profit
      */
-    public Animal(double procreate, int cost, int profit, double land, double diseaseDeathRate) {
-        super(cost, profit, land, diseaseDeathRate);
-        //procreateChance = procreate;
+    public Animal(int cost, int profit, double land, double diseaseDeathRate, HarvestStrategy hs) {
+        super(cost, profit, land, diseaseDeathRate, hs);
         age = 0;
     }
     
@@ -39,15 +34,7 @@ public abstract class Animal extends Asset{
     }
     
     /**
-     * sets the animals chance to procreate on each 4th cycle
-     * @param p chance to procreate
-     */
-    protected void setChanceToProcreate(double p) {
-        //procreateChance = p;
-    }
-    
-    /**
-     * Increase age of the animal by 1
+     * Increase age of the animal by 1 day
      */
     public void incrementAge() {
         age++;

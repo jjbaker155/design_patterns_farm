@@ -15,19 +15,34 @@ import main.java.FarmerControl.FarmerKind;
  */
 public class FarmControl {
     
-    //defaults
+    //defaults    
+    //wait time for regular harvest
+    public final static int REG_HARVEST_WAIT = 2;
+    //cycles to mature
+    public final static int TIME_TO_MATURE = 3;
+    //number farmers you begin with
     public final static int INITIAL_FARMERS = 3;
+    //number assets you begin with
     public final static int INITIAL_ASSETS = 4;
+    //acreage to win
     public final static double MAX_ACREAGE = 100;
+    //money to win
     public final static int MAX_MONEY = 10000;
+    //money to start with
     public final static int INITIAL_MONEY = 1000;
+    //acres to start with
     public final static double STARTING_ACREAGE = 1.0;
+    //cost to buy an acre
     private final static int ACRE_COST = 1000;
+    //farmer daily pay
     private final static int FARMER_PER_DIEM = 50;
+    //Farmer to Acre ratio
+    private final static double FARMER_PURCHASE_TRIGGER = 0.4;
     
     private Random rand;
     private Farm farm;
     private FarmerControl farmerControl;
+    private int day;
     
     private AssetFactory af;
     
@@ -40,6 +55,7 @@ public class FarmControl {
     private FarmControl() {
         farm = Farm.makeFarm();
         af = AssetFactory.makeAssetFactory();
+        day = 0;
     }
     
     /**
@@ -89,7 +105,11 @@ public class FarmControl {
      * @param String representing asset type
      */
     public void purchaseRandomAsset() {
-        
+        Asset a = AssetFactory.createRandomAsset();
+        double landNeeded = a.getLandNeeded();
+        if(landNeeded < a.getLandNeeded()) {
+            buyAcre();
+        }
     }
     
     private void runDay() {
@@ -123,7 +143,30 @@ public class FarmControl {
         return farm;
     }
     
+    /**
+     * Purchase an acre
+     *  
+     */
+    public void buyAcre() {
+        farm.deductMoney(ACRE_COST);
+        farm.addAcre();
+    }
   
+    
+    private int harvestCrop(Crop c) {
+        double bonus = cropHarvestBonus();
+        int proceeds = 0;
+        ArrayList<Asset> list = farm.getAssetList();
+        for(Asset a : list) {
+            if (a instanceof Crop) {
+                //harvest
+                //add to proceeds
+            }
+        }
+        //apply multiplier
+        return proceeds;
+    }
+    
     /**
      * "Pull yourself up by your bootstraps!"
      */
@@ -142,12 +185,7 @@ public class FarmControl {
            Animal animal = (Animal) a;
            animal.setAge(0);
         }
-        try {
-            farm.deductMoney(a.getCost());
-        }
-        catch(FarmIsBankruptException e){
-            //TODO: handle end of simulation
-        }
+        farm.deductMoney(a.getCost());
     }
     
     /**
@@ -170,7 +208,7 @@ public class FarmControl {
      */
     private boolean shouldHireFarmer() {
         //if farmer coverage bonus falls below 0.5
-        if (farmerCoverageBonus() < 0.10) {
+        if (farm.getFarmerCount()/farm.getAcreage() < 0.4) {
             return true;
         }
         else
@@ -178,12 +216,14 @@ public class FarmControl {
     }
     
     /**
-     * 
-     * @return double a multiplier for coverage bonus
+     * If acreage available exceeds .5
+     * @return
      */
-    private double farmerCoverageBonus() {
-        double d = farm.getFarmerCount() / farm.getAcreage() / 50;
-        return d;
+    private boolean shouldBuyAsset() {
+        if (farm.getSpaceAvailable() > .5) {
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -198,7 +238,7 @@ public class FarmControl {
      * Increase harvest price for crops (a multiplier)
      * @return double a multiplier for crop sale
      */
-    private double cropHarvestBonues() {
+    private double cropHarvestBonus() {
         return numberOfCropFarmers() / numberOfCrops() / 25;
     }
     

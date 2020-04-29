@@ -16,21 +16,22 @@ public abstract class Asset {
     private int profit;
     //cost to purchase asset
     private int cost;
-    //Strategy DP - how this asset gets harvested
-    private HarvestStrategy harvestStrategy;
     //disease death rate
     private double diseaseDeathRate;
     //state context for this asset
     private final AssetStateContext sc = new AssetStateContext();
+    //harvest strategy
+    private final HarvestStrategy HARVEST_STRATEGY;
     
     static Random rand = new Random();
     
     
-    public Asset(int c, int p, double l, double deathRate) {
+    public Asset(int c, int p, double l, double deathRate, HarvestStrategy hs) {
         landNeeded = l;
         cost = c;
         profit = p;
         diseaseDeathRate = deathRate;
+        HARVEST_STRATEGY = hs;
     }
        
     /**
@@ -81,18 +82,10 @@ public abstract class Asset {
     }
     
     /**
-     * Sets the HarvestStrategy for this Asset
-     * @param hs
-     */
-    public void setHarvestStrategy(HarvestStrategy hs) {
-        this.harvestStrategy = hs;
-    }
-    
-    /**
      * Calls harvest() from the appropriate HarvestStrategy object 
      */
     public void harvest() {
-        harvestStrategy.harvest(this);
+        HARVEST_STRATEGY.harvest(this);
     }
     
     /**
