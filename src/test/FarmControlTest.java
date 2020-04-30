@@ -67,7 +67,7 @@ public class FarmControlTest {
      */
     @Test
     public void test3GenerateInitialAssets() throws AssetAlreadyDeadException {
-        farmControl.generateInitialAssets(farm);
+        farmControl.generateInitialAssets();
         ArrayList<Asset> assetList = farmControl.getFarm().getAssetList();
         assertTrue(assetList.get(FarmControl.INITIAL_ASSETS - 1) instanceof Asset);
     }
@@ -101,7 +101,7 @@ public class FarmControlTest {
      */
     @Test
     public void test6reOrderState() throws AssetAlreadyDeadException {
-        farmControl.generateInitialAssets(farm);
+        farmControl.generateInitialAssets();
         Asset a = farm.getAssetByIndex(0);
         a.getStateContext().setState(new StateDead());
         farmControl.reOrder(a);
@@ -114,7 +114,7 @@ public class FarmControlTest {
      */
     @Test
     public void test7reOrderAge() throws AssetAlreadyDeadException {
-        farmControl.generateInitialAssets(farm);
+        farmControl.generateInitialAssets();
         Asset a = farm.getAssetByIndex(0);
         a.getStateContext().setState(new StateDead());
         a.setAge(2);

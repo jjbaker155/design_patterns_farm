@@ -24,18 +24,20 @@ public class FarmControl {
     public final static int INITIAL_FARMERS = 3;
     //number assets you begin with
     public final static int INITIAL_ASSETS = 4;
+    //number of cycles before simulation ends
+    public final static int MAX_CYCLES = 25;
     //acreage to win
-    public final static double MAX_ACREAGE = 100;
+    public final static double MAX_ACREAGE = 100.0;
     //money to win
     public final static int MAX_MONEY = 10000;
     //money to start with
-    public final static int INITIAL_MONEY = 1000;
+    public final static int INITIAL_MONEY = 2000;
     //acres to start with
     public final static double STARTING_ACREAGE = 1.0;
     //cost to buy an acre
     private final static int ACRE_COST = 1000;
     //farmer daily pay
-    private final static int FARMER_PER_DIEM = 100;
+    private final static int FARMER_PER_DIEM = 50;
     //Farmer to Acre ratio
     private final static double FARMER_PURCHASE_TRIGGER = 0.4;
     //days between harvests for renewable assets
@@ -47,9 +49,11 @@ public class FarmControl {
     //chance of healing asset
     private final double ASSET_HEAL_CHANCE = 0.15;
     //for report building
-    private final String REPORT_ITEM_SEPERATOR = "\n-------------------";
-    private final String REPORT_STAR_SEPERATOR = "\n*****************" + 
+    private final String REPORT_ITEM_SEPERATOR = "-------------------";
+    private final String REPORT_STAR_SEPERATOR = "*****************" + 
     "*************";
+    
+    private int cycles;
     
     private static Random rand = new Random();
     private Farm farm;
@@ -64,6 +68,8 @@ public class FarmControl {
     //the only farm control - singleton
     private static FarmControl farmControlSoleInstance;
     
+    private boolean gameOn;
+    
     /**
      * Private constructor
      */
@@ -72,6 +78,8 @@ public class FarmControl {
         af = AssetFactory.makeAssetFactory();
         day = 0;
         resetCycleReports();
+        gameOn = true;
+        cycles = 0;
     }
     
     /**
@@ -83,6 +91,8 @@ public class FarmControl {
         af = AssetFactory.makeAssetFactory();
         day = 0;
         resetCycleReports();
+        gameOn = true;
+        cycles = 0;
     }
     
     /**
@@ -94,6 +104,11 @@ public class FarmControl {
             farmControlSoleInstance = new FarmControl();
             farmControlSoleInstance.attachFarmerControl();
             farmControlSoleInstance.generateInitialFarmers();
+            try {
+                farmControlSoleInstance.generateInitialAssets();
+            } catch (AssetAlreadyDeadException e) {
+                e.printStackTrace();
+            }
         }
         return farmControlSoleInstance;
     }
@@ -107,26 +122,40 @@ public class FarmControl {
         farmControlSoleInstance = new FarmControl(true);
         farmControlSoleInstance.attachFarmerControl();
         return farmControlSoleInstance;
-    }    
+    }
+    
+    /**
+     * "Pull yourself up by your bootstraps!"
+     */
+    private void attachFarmerControl() {
+        if (farmerControl == null)
+            farmerControl = FarmerControl.createFarmerControl();
+    }
     
     /**
      * Generate 3 random farmer types for your farm
      * @param farm
      */
     private void generateInitialFarmers() {
+        dayReportAdd("Initial Farmer Hires:");
+        dayReportAdd(REPORT_ITEM_SEPERATOR);
         for (int i = 0; i <= INITIAL_FARMERS - 1; i++) {
             hireRandomFarmer();
         }
+        dayReportAdd("\n");
     }
     
     /**
      * Generate initial assets for your farm
      * @throws AssetAlreadyDeadException 
      */
-    public void generateInitialAssets(Farm f) throws AssetAlreadyDeadException {
+    public void generateInitialAssets() throws AssetAlreadyDeadException {
+        dayReportAdd("Initial Asset Purchase:");
+        dayReportAdd(REPORT_ITEM_SEPERATOR);
         for (int i = 0; i < INITIAL_ASSETS; i++) {
-            farm.addAsset(af.createRandomAsset());
+            purchaseRandomAsset();
         }
+        dayReportAdd("\n");
     }
     
     /**
@@ -136,7 +165,7 @@ public class FarmControl {
     public void hireRandomFarmer() {
         Farmer f = farmerControl.randomFarmer();
         farm.addFarmer(f);
-        dayReportAdd("Hired new " + f.getTypeName());
+        dayReportAdd("Hired new " + f.getTypeName() + " farmer.");
     }
     
     /**
@@ -151,7 +180,7 @@ public class FarmControl {
             buyAcre();
         }
         farm.addAsset(a);
-        this.dayReportAdd(a.getTypeName() + " purchased. \nDeduct" + a.getCost());
+        this.dayReportAdd(a.getTypeName() + " purchased. \nDeduct " + a.getCost());
         farm.deductMoney(a.getCost());
     }
     
@@ -162,7 +191,8 @@ public class FarmControl {
      * @throws AssetAlreadyDeadException
      */
     public String runDay() throws AssetAlreadyDeadException {
-        //add some summary to day report
+        //todo: add some summary to day report
+        //todo: place try/catch in methods where it will be useful
         harvestCrops();
         harvestAnimals();
         reOrderAllPerished();
@@ -173,10 +203,32 @@ public class FarmControl {
             hireRandomFarmer();
         }
         if(shouldBuyAsset()) {
-            purchaseRandomAsset();
+            //todo: place try/catch in methods where it will be more useful
+            try {
+                purchaseRandomAsset();
+            } catch (AssetAlreadyDeadException e) {
+                System.out.println("Asset is already dead. **back to unit testing**");
+            }
         }
         if(shouldBuyAcre()) {
             buyAcre();
+        }
+        cycles++;
+        if (farm.getMoney() > MAX_MONEY) {
+            dayReportAdd("\nReached money goal. Farm has succeded.");
+            gameOn = false;
+        }
+        if (farm.getMoney() < 0) {
+            dayReportAdd("\nBankrupt. Farm has failed.");
+            gameOn = false;
+        }
+        if (farm.getAcreage() >= MAX_ACREAGE) {
+            dayReportAdd("\nReached land goal. Farm has succeded.");
+            gameOn = false;
+        }
+        if (cycles >= MAX_CYCLES) {
+            dayReportAdd("\nReached cycle max. Simulation ended inconclusively.");
+            gameOn = false;
         }
         return dayReport.toString();
     }
@@ -186,9 +238,14 @@ public class FarmControl {
      * @return String report
      * @throws AssetAlreadyDeadException
      */
-    public String runNight() throws AssetAlreadyDeadException{
-        makeAnimalSick();
-        makeCropSick();
+    public String runNight() {
+        //todo: place try/catch in methods where it will be more useful
+        try {
+            makeAnimalSick();
+            makeCropSick();
+        } catch (AssetAlreadyDeadException e) {
+            System.out.println("Asset is already dead. **back to unit testing**");
+        }
         return nightReport.toString();
     }
     
@@ -197,7 +254,7 @@ public class FarmControl {
      */
     public void payFarmers() {
         int payRoll = farm.getFarmerCount() * FARMER_PER_DIEM;
-        dayReportAdd(farm.getFarmerCount() + " farmers paid.\nTotal: " + payRoll);
+        dayReportAdd("\n" + farm.getFarmerCount() + " farmers paid.\nTotal: " + payRoll);
         farm.deductMoney(payRoll);
     }
     
@@ -223,10 +280,11 @@ public class FarmControl {
      * @throws AssetAlreadyDeadException
      */
     public int harvestCrops() throws AssetAlreadyDeadException {
-        dayReportAdd("Crop Harvest:\n" + REPORT_STAR_SEPERATOR);
+        dayReportAdd("Crop Harvest:\n" + REPORT_ITEM_SEPERATOR);
         double bonus = cropHarvestBonus();
         double merchantBonus = merchantFarmerBonus();
         int proceeds = 0;
+        int count = 0;
         ArrayList<Crop> list = getCropsForHarvest();
         for(Crop c : list) {
             dayReportAdd(REPORT_ITEM_SEPERATOR);
@@ -240,14 +298,15 @@ public class FarmControl {
             }
             int assetValue = c.harvest(); 
             proceeds += assetValue;
+            count++;
             dayReportAdd("Harvest " + c.getTypeName() + "\n" + "Harvest Type:"
             + harvestType + "Value: " + assetValue);
         }
-        dayReportAdd("Crop farmer bonus = " + bonus + "\n");
-        dayReportAdd("Merchant farmer bonus = " + merchantBonus + "\n");
+        dayReportAdd("Crop farmer harvest bonus = " + bonus);
+        dayReportAdd("Merchant farmer harvest bonus = " + merchantBonus);
         double multiplier = bonus + merchantBonus + 1.0;
         double p = proceeds * multiplier;
-        dayReportAdd("Total crop earnings;" + p);
+        dayReportAdd("Total crop earnings: " + p + "\n");
         return (int) p;
     }
     
@@ -257,9 +316,11 @@ public class FarmControl {
      * @throws AssetAlreadyDeadException
      */
     public int harvestAnimals() throws AssetAlreadyDeadException {
+        dayReportAdd("Animal Harvest:\n" + REPORT_ITEM_SEPERATOR);
         double bonus = animalHarvestBonus();
         double merchantBonus = merchantFarmerBonus();
         int proceeds = 0;
+        int count = 0;
         ArrayList<Animal> list = getAnimalsForHarvest();
         for(Animal a : list) {
             dayReportAdd(REPORT_ITEM_SEPERATOR);
@@ -271,8 +332,9 @@ public class FarmControl {
             {
                 harvestType = " Normal \n";
             }
-            int assetValue = a.harvest(); 
+            int assetValue = a.harvest();
             proceeds += assetValue;
+            count++;
             dayReportAdd("Harvest " + a.getTypeName() + "\n" + "Harvest Type:"
             + harvestType + "(animal slaughtered)\nValue: " + assetValue);
         }
@@ -280,19 +342,10 @@ public class FarmControl {
         dayReportAdd("Merchant farmer bonus = " + merchantBonus);
         double multiplier = bonus + merchantBonus + 1;
         double p = proceeds * multiplier;
-        dayReportAdd("Total animal earnings;" + p);
+        dayReportAdd("Total animal earnings: " + p);
         return (int) p;
     }
-    
-    /**
-     * "Pull yourself up by your bootstraps!"
-     */
-    private void attachFarmerControl() {
-        if (farmerControl == null)
-            farmerControl = FarmerControl.createFarmerControl();
-    }
-    
-        
+       
     /**
      * Reorder the animal. More formally, it sets it to alive and deducts the cost
      * @param a
@@ -367,7 +420,9 @@ public class FarmControl {
         double result = rand.nextDouble();
         if (result <= ANIMAL_SICKNESS_CHANCE && numberOfAnimals() > 0) {
             int whichAnimal = rand.nextInt(numberOfAnimals());
-            this.getAliveAnimals().get(whichAnimal).setDiseased();
+            Animal a = getAliveAnimals().get(whichAnimal); 
+            a.setDiseased();
+            nightReportAdd("A " + a.getTypeName() + " has become ill.");
             return true;
         }
         return false;
@@ -382,7 +437,9 @@ public class FarmControl {
         double result = rand.nextDouble();
         if (result <= CROP_SICKNESS_CHANCE && numberOfCrops() > 0) {
             int whichCrop = rand.nextInt(numberOfCrops());
-            this.getAliveCrops().get(whichCrop).setDiseased();
+            Crop c = this.getAliveCrops().get(whichCrop); 
+            c.setDiseased();
+            nightReportAdd("A " + c.getTypeName() + " field has become ill.");
             return true;
         }
         return false;
@@ -630,12 +687,27 @@ public class FarmControl {
         dayReport.append(appendation + "\n");
     }
     
+    
     /**
      * Add a string to the night report
      * @param String to add to report
      */
     public void nightReportAdd(String appendation) {
         nightReport.append(appendation + "\n");
+    }
+    
+    /**
+     * Resets the day report for tomorrow
+     */
+    private void resetDayReport() {
+        dayReport = new StringBuilder();
+    }
+    
+    /**
+     * Resets the night report for tomorrow
+     */
+    private void resetNighReport() {
+        nightReport = new StringBuilder();
     }
     
     /**
@@ -694,6 +766,33 @@ public class FarmControl {
             }
         }
         return null;
+    }
+    
+    /**
+     * Check each animals age and move to dead if over 14 days
+     * Reorder replacement
+     */
+    private void checkAnimalAge() {
+        ArrayList<Animal> list = getAliveAnimals();
+        for (Animal a : list) {
+            if (a.getAge() >= a.AGE_TO_DIE) {
+                try {
+                    a.setDead();
+                    dayReportAdd("A " + a.getTypeName() + 
+                            " has died of old age. A replacement will be reordered");
+                } catch (AssetAlreadyDeadException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    /**
+     * Returns indicator is the simulation should continue.
+     * @return indicator if sim should go on
+     */
+    public boolean isGameOn() {
+        return gameOn;
     }
         
 }
