@@ -59,9 +59,38 @@ public class AssetFactory {
         if(num == AssetKind.SOY.ordinal()) {
             a = new Soy();
         }
-        if(a != null) {
-            a.setAliveReorder();
+        a.setAliveNewAsset();
+        return a;
+    }
+    
+    /**
+     * Pass a String to this method to create a Farm Asset ->
+     * "Cattle" "Hog" "Sheep" "DairyCow" "Corn" "Soy"
+     * @param String name of asset to create
+     * @return
+     * @throws AssetAlreadyDeadException 
+     */
+    public Asset createAsset(String s) throws AssetAlreadyDeadException {
+        Asset a = null;
+        if(s.equalsIgnoreCase("cattle")) {
+            a = new Cattle();
         }
+        if(s.equalsIgnoreCase("hog")) {
+            a = new Hog();
+        }
+        if(s.equalsIgnoreCase("sheep")) {
+            a = new Sheep();
+        }
+        if(s.equalsIgnoreCase("dairycow")) {
+            a = new DairyCow();
+        }
+        if(s.equalsIgnoreCase("corn")) {
+            a = new Corn();
+        }
+        if(s.equalsIgnoreCase("soy")) {
+            a = new Soy();
+        }
+        a.setAliveNewAsset();
         return a;
     }
     

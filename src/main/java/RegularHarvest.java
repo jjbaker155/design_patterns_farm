@@ -1,5 +1,7 @@
 package main.java;
 
+import exceptions.AssetAlreadyDeadException;
+
 public class RegularHarvest implements HarvestStrategy {
     
     //this strategy is also a singleton
@@ -25,10 +27,13 @@ public class RegularHarvest implements HarvestStrategy {
      * Harvest the asset
      * @param Asset to harvest
      * @return int the amount of money earned
+     * @throws AssetAlreadyDeadException  is the asset is dead
      */
     @Override
-    public int harvest(Asset a) {
-        //reset harvest days
+    public int harvest(Asset a) throws AssetAlreadyDeadException {
+        if (a.isDead()) {
+            throw new AssetAlreadyDeadException();
+        }
         a.setHarvestDays(FarmControl.DEFAULT_HARVEST_DAYS);
         //return sale amount
         return a.getProfit();

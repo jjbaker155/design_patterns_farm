@@ -27,10 +27,14 @@ public class TerminalHarvest implements HarvestStrategy {
      * Harvest the asset
      * @param Asset to harvest
      * @return int the amount of money earned
+     * @throws AssetAlreadyDeadException is the asset is already dead
      */
     @Override
     public int harvest(Asset a) throws AssetAlreadyDeadException {
         // change a to dead
+        if (a.isDead()) {
+            throw new AssetAlreadyDeadException();
+        }
         a.setDead();
         //return sale amount
         return a.getProfit();

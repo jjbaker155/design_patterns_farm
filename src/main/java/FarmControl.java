@@ -247,13 +247,13 @@ public class FarmControl {
             farmerControl = FarmerControl.createFarmerControl(this);
     }
     
+        
     /**
      * Reorder the animal. More formally, it sets it to alive and deducts the cost
      * @param a
      */
     public void reOrder(Asset a) {
-        a.setAliveReorder();
-        a.setAge(0);
+        a.setAliveNewAsset();
         farm.deductMoney(a.getCost());
     }
     
@@ -310,15 +310,7 @@ public class FarmControl {
     private double cropHarvestBonus() {
         return numberOfCropFarmers() / numberOfCrops() / 25;
     }
-    
-    /**
-     * Increase sale price of all commodities (a multiplier) 
-     * @return double a multiplier for sale price
-     */
-    private double assetSaleBonus() {
-        return numberOfMerchantFarmers() / farm.getAcreage() / 25;
-    }
-    
+       
     /**
      * Increase odds of animal survival when healing
      * @return
@@ -340,7 +332,7 @@ public class FarmControl {
      * @return a % bonus for merchant farmer bonus
      */
     private double merchantFarmerBonus() {
-        return numberOfMerchantFarmers() * .05; 
+        return numberOfMerchantFarmers() * .04; 
     }
     
     /**

@@ -111,6 +111,10 @@ public abstract class Asset {
         return sc.isDiseased();
     }
     
+    public boolean isDead() {
+        return sc.isDead();
+    }
+    
     /**
      * Set state of asset to diseased
      * @throws AssetAlreadyDeadException Asset is already dead. You cannot change state
@@ -141,9 +145,10 @@ public abstract class Asset {
     /**
      * Set asset to alive in the case of a reorder
      */
-    public void setAliveReorder() {
+    public void setAliveNewAsset() {
         sc.setState(new StateAlive());
         setAge(0);
+        harvestDays = FarmControl.DEFAULT_HARVEST_DAYS;
     }
     
     public void setAge(int a) {
