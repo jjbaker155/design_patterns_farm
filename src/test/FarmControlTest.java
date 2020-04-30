@@ -40,8 +40,7 @@ public class FarmControlTest {
     public void setup() {
         farmControl = FarmControl.createTestFarmControl();
         farm = farmControl.getFarm();
-        FarmerControl farmerControl = FarmerControl.
-                createFarmerControl(farmControl);
+        farmerControl = FarmerControl.createTestFarmerControl();
     }
 
     /**
@@ -265,10 +264,9 @@ public class FarmControlTest {
      */
     @Test
     public void test14MerchantBonus() throws AssetAlreadyDeadException {
-        Farmer farmer1 = farmerControl.createFarmer(FarmerKind.MERCHANT);
-        //farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
-        //farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
-        //farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
+        farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
+        farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
+        farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         Cattle cattle1 = (Cattle) af.createAsset("cattle");
         
         
@@ -290,7 +288,6 @@ public class FarmControlTest {
     public void test15MerchantBonus() throws AssetAlreadyDeadException {
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
-        farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         Corn corn1 = (Corn) af.createAsset("corn");
         
         
@@ -308,21 +305,51 @@ public class FarmControlTest {
      * Test the crop farmer bonus for the sale of crops
      * @throws AssetAlreadyDeadException
      */
-    
+    @Test
     public void test16CropBonus() throws AssetAlreadyDeadException {
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
+        farm.addFarmer(farmerControl.createFarmer(FarmerKind.ANIMAL));
         Corn corn1 = (Corn) af.createAsset("corn");
         
         
-        //adds 725 to harvest
+        //adds 650 to harvest
         farm.addAsset(corn1);
         corn1.setHarvestDays(0);
         
-        //2 merchants -> expected merchant bonus is .08
-        //expected harvest: 650 * 1.08 = 702
+        //3 crop farmers, 1 crop -> expected crops bonus is .12
+        //expected harvest: 650 * 1.12 = 728
         
-        assertEquals(702, farmControl.harvestCrops());
+        assertEquals(728, farmControl.harvestCrops());
     }
+    
+    /**
+     * Test the crop farmer bonus for the sale of crops
+     * @throws AssetAlreadyDeadException
+     */
+    @Test
+    public void test17AnimalBonus() throws AssetAlreadyDeadException
+    {
+        farm.addFarmer(farmerControl.createFarmer(FarmerKind.ANIMAL));
+        farm.addFarmer(farmerControl.createFarmer(FarmerKind.ANIMAL));
+        farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
+        Cattle cattle1 = (Cattle) af.createAsset("cattle");
+        Cattle cattle2 = (Cattle) af.createAsset("cattle");
+        
+        //adds 1450 to harvest
+        farm.addAsset(cattle1);
+        cattle1.setHarvestDays(0);
+        farm.addAsset(cattle2);
+        cattle2.setHarvestDays(0);
+        
+        //2 animal farmers, 2 animals -> expected animal bonus is 0.04
+        //expected harvest: 1450 * 1.04 = 1508
+        
+        assertEquals(1508, farmControl.harvestAnimals());
+    }
+    
+    //@Test
+    //public void 
+    
 }

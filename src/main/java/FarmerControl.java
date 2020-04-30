@@ -10,22 +10,22 @@ public class FarmerControl {
     }
     
     private Random rand = new Random();
-    private FarmControl farmControl;
+    //private FarmControl farmControl;
     private static FarmerControl farmerControlSoleInstance;
     
     
     /**
      * Private constructor
      */
-    private FarmerControl(FarmControl farmControl) {
-        this.farmControl = farmControl;
+    private FarmerControl() {
+        //this.farmControl = farmControl;
     }
     
     /**
      * Private constructor for making test FarmerControl
      */
-    private FarmerControl(FarmControl farmControl, boolean test) {
-        this.farmControl = farmControl;
+    private FarmerControl(boolean test) {
+        //this.farmControl = farmControl;
     }
     
     /**
@@ -33,9 +33,9 @@ public class FarmerControl {
      * the existing one if it does. This prevents the existence of more than one FC in the system
      * @return a FarmerControl object
      */
-    public static FarmerControl createFarmerControl(FarmControl farmControl) {
+    public static FarmerControl createFarmerControl() {
         if (farmerControlSoleInstance == null) {
-            farmerControlSoleInstance = new FarmerControl(farmControl);
+            farmerControlSoleInstance = new FarmerControl();
         }
         return farmerControlSoleInstance;
     }
@@ -45,8 +45,8 @@ public class FarmerControl {
      * This will DESTROY the existing FarmerControl
      * @return a FarmerControl object
      */
-    public static FarmerControl createTestFarmerControl(FarmControl farmControl) {
-        farmerControlSoleInstance = new FarmerControl(farmControl, true);
+    public static FarmerControl createTestFarmerControl() {
+        farmerControlSoleInstance = new FarmerControl(true);
         return farmerControlSoleInstance;
     }
     

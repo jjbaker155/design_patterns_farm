@@ -14,7 +14,7 @@ import main.java.FarmerControl.FarmerKind;
 public class FarmerControlTest {
     
     FarmControl farmControl = FarmControl.createFarmControl();
-    FarmerControl farmerControl = FarmerControl.createFarmerControl(farmControl);
+    FarmerControl farmerControl = FarmerControl.createFarmerControl();
     
     @Before
     public void setUp(){

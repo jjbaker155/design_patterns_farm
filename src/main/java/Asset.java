@@ -179,7 +179,7 @@ public abstract class Asset {
     }
     
     /**
-     * Get a String representation of the animal name
+     * Get a String representation of the asset type
      * @return
      */
     public String getTypeName() {

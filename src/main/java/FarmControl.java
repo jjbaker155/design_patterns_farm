@@ -40,6 +40,10 @@ public class FarmControl {
     private final static double FARMER_PURCHASE_TRIGGER = 0.4;
     //days between harvests for renewable assets
     public static final int DEFAULT_HARVEST_DAYS = 3;
+    //chance animal will get sick
+    private final double ANIMAL_SICKNESS_CHANCE = 0.25;
+    //chance crop will get sick
+    private final double CROP_SICKNESS_CHANCE = 0.20;
     //for report building
     private final String REPORT_ITEM_SEPERATOR = "\n-------------------";
     private final String REPORT_STAR_SEPERATOR = "\n*****************" + 
@@ -70,7 +74,7 @@ public class FarmControl {
     
     /**
      * Private constructor for making test FarmControl
-     * @param boolean to indicate using this contructor
+     * @param boolean to indicate using this constructor
      */
     private FarmControl(boolean test) {
         farm = Farm.makeTestFarm();
@@ -109,7 +113,7 @@ public class FarmControl {
      */
     private void generateInitialFarmers() {
         for (int i = 0; i <= INITIAL_FARMERS - 1; i++) {
-            farm.addFarmer(farmerControl.randomFarmer());
+            hireRandomFarmer();
         }
     }
     
@@ -128,7 +132,9 @@ public class FarmControl {
      * @param Farm to add a Farmer to
      */
     public void hireRandomFarmer() {
-        farm.addFarmer(farmerControl.randomFarmer());
+        Farmer f = farmerControl.randomFarmer();
+        farm.addFarmer(f);
+        dayReportAdd("Hired new " + f.getTypeName());
     }
     
     /**
@@ -143,15 +149,20 @@ public class FarmControl {
             buyAcre();
         }
         farm.addAsset(a);
+        this.dayReportAdd(a.getTypeName() + " purchased.");
     }
     
     
-    
+    /**
+     * Run through Day Sequence
+     * @throws AssetAlreadyDeadException
+     */
     private void runDay() throws AssetAlreadyDeadException {
         int totalCropEarnings = harvestCrops();
         
         
         //harvest and collect
+        
         //reorder dead assets (do not clear acreage)
         //try to heal
         //payroll
@@ -175,15 +186,18 @@ public class FarmControl {
     }
     
     /**
-     * Purchase an acre
-     *  
+     * Purchase an acre of land
      */
     public void buyAcre() {
         farm.deductMoney(ACRE_COST);
         farm.addAcre();
     }
   
-    
+    /**
+     * Harvest all crops that qualify and returning the proceeds
+     * @return int the proceeds
+     * @throws AssetAlreadyDeadException
+     */
     public int harvestCrops() throws AssetAlreadyDeadException {
         dayReportAdd("Crop Harvest:\n" + REPORT_STAR_SEPERATOR);
         double bonus = cropHarvestBonus();
@@ -207,11 +221,16 @@ public class FarmControl {
         }
         dayReportAdd("Crop farmer bonus = " + bonus + "\n");
         dayReportAdd("Merchant farmer bonus = " + merchantBonus + "\n");
-        double multiplier = bonus + merchantBonus + 1;
+        double multiplier = bonus + merchantBonus + 1.0;
         double p = proceeds * multiplier;
         return (int) p;
     }
     
+    /**
+     * Harvest all animals that qualify and returning the proceeds
+     * @return int the proceeds
+     * @throws AssetAlreadyDeadException
+     */
     public int harvestAnimals() throws AssetAlreadyDeadException {
         double bonus = animalHarvestBonus();
         double merchantBonus = merchantFarmerBonus();
@@ -244,7 +263,7 @@ public class FarmControl {
      */
     private void attachFarmerControl() {
         if (farmerControl == null)
-            farmerControl = FarmerControl.createFarmerControl(this);
+            farmerControl = FarmerControl.createFarmerControl();
     }
     
         
@@ -278,6 +297,7 @@ public class FarmControl {
     private boolean shouldHireFarmer() {
         //if farmer coverage bonus falls below 0.5
         if (farm.getFarmerCount()/farm.getAcreage() < 0.4) {
+            dayReportAdd("Hiring new farmer:");
             return true;
         }
         else
@@ -290,33 +310,43 @@ public class FarmControl {
      */
     private boolean shouldBuyAsset() {
         if (farm.getSpaceAvailable() > .5) {
+            dayReportAdd("Buying new asset:");
             return true;
         }
         return false;
     }
     
-    /**
-     * Increase harvest price for animals (a multiplier)
-     * @return double a multiplier for animal sale
-     */
-    private double animalHarvestBonus() {
-        return numberOfAnimalFarmers() / numberOfAnimals() / 25;
+    public boolean makeAnimalSick() {
+        double result = rand.nextDouble();
+        if (result >= ANIMAL_SICKNESS_CHANCE) {
+            int whichAnimal = rand.nextInt(this.numberOfAnimals());
+        }
+        return false;
+        
     }
     
     /**
-     * Increase harvest price for crops (a multiplier)
-     * @return double a multiplier for crop sale
+     * Increase harvest price for animals 
+     * @return double a % bonus for animal sale
+     */
+    private double animalHarvestBonus() {
+        return numberOfAnimalFarmers() / getAnimalsForHarvest().size() / 25.0;
+    }
+    
+    /**
+     * Increase harvest price for crops
+     * @return double a % bonus for crop sale
      */
     private double cropHarvestBonus() {
-        return numberOfCropFarmers() / numberOfCrops() / 25;
+        return (numberOfCropFarmers() / getCropsForHarvest().size()) / 25.0;
     }
        
     /**
      * Increase odds of animal survival when healing
      * @return
      */
-    private double veterinaryBonus() {
-        return numberOfVeterinaryFarmers() / numberOfAnimals() / 25;
+    private double veterinaryHealBonus() {
+        return numberOfVeterinaryFarmers() / numberOfAnimals() / 15.0;
     }
     
     /**
@@ -324,7 +354,7 @@ public class FarmControl {
      * @return
      */
     private double cropHealBonus() {
-        return numberOfCropFarmers() / numberOfCrops() / 15.0;
+        return numberOfCropFarmers() / numberOfCrops() / 25.0;
     }
     
     /**
@@ -341,12 +371,10 @@ public class FarmControl {
      */
     private int numberOfAnimals() {
         int num = 0;
-        ArrayList<Asset> list = farm.getAssetList();
+        ArrayList<Animal> list = getAliveAnimals();
         for(Asset a : list) {
-            if (a instanceof Animal) {
-                if(a.isAlive()) {
-                    num++;
-                }
+            if(a.isAlive()) {
+                num++;
             }
         }
         return num;
@@ -358,17 +386,53 @@ public class FarmControl {
      */
     private int numberOfCrops() {
         int num = 0;
-        ArrayList<Asset> list = farm.getAssetList();
+        ArrayList<Crop> list = getAliveCrops();
         for(Asset a : list) {
-            if (a instanceof Crop) {
-                if(a.isAlive()) {
-                    num++;
-                }
+            if(a.isAlive()) {
+                num++;
             }
         }
         return num;
     }
     
+    /**
+     * Returns a list of animals that are alive
+     * @return ArrayList<Animal>
+     */
+    private ArrayList<Animal> getAliveAnimals() {
+        ArrayList<Asset> list = farm.getAssetList();
+        ArrayList<Animal> outputList = new <Animal>ArrayList();
+        for(Asset a : list) {
+            if (a instanceof Animal) {
+                if(a.isAlive()) {
+                    outputList.add((Animal) a);
+                }
+            }
+        }
+        return outputList;
+    }
+    
+    /**
+     * Returns a list of crops that are alive
+     * @return ArrayList<Crop>
+     */
+    private ArrayList<Crop> getAliveCrops() {
+        ArrayList<Asset> list = farm.getAssetList();
+        ArrayList<Crop> outputList = new <Crop> ArrayList();
+        for(Asset a : list) {
+            if(a instanceof Crop) {
+                if(a.isAlive()) {
+                    outputList.add((Crop) a);
+                }
+            }
+        }
+        return outputList;
+    }
+    
+    /**
+     * Returns the number of farmers that specialize in animals
+     * @return
+     */
     private int numberOfAnimalFarmers() {
         int num = 0;
         ArrayList<Farmer> list = farm.getFarmerList();
@@ -380,6 +444,10 @@ public class FarmControl {
         return num;
     }
     
+    /**
+     * Returns the number of farmers that specialize in crops
+     * @return
+     */
     private int numberOfCropFarmers() {
         int num = 0;
         ArrayList<Farmer> list = farm.getFarmerList();
@@ -391,6 +459,10 @@ public class FarmControl {
         return num;
     }
     
+    /**
+     * Returns the number of veterinarians working on the farm
+     * @return farmers that are vets
+     */
     private int numberOfVeterinaryFarmers() {
         int num = 0;
         ArrayList<Farmer> list = farm.getFarmerList();
@@ -402,6 +474,10 @@ public class FarmControl {
         return num;
     }
     
+    /**
+     * Returns the number of merhchant farmers working on the farm
+     * @return number of farmers that are merchants
+     */
     private int numberOfMerchantFarmers() {
         int num = 0;
         ArrayList<Farmer> list = farm.getFarmerList();
@@ -426,7 +502,7 @@ public class FarmControl {
     }
     
     /**
-     * 
+     * Add a String to the day report
      * @param String to add to report
      */
     public void dayReportAdd(String appendation) {
@@ -434,13 +510,17 @@ public class FarmControl {
     }
     
     /**
-     * 
+     * Add a string to the night report
      * @param String to add to report
      */
     public void nightReportAdd(String appendation) {
         nightReport.append(appendation + "\n");
     }
     
+    /**
+     * Provides list of crops ready for harvest
+     * @return ArrayList of Crops
+     */
     private ArrayList<Crop> getCropsForHarvest() {
         ArrayList<Asset> assetList = farm.getAssetList();
         ArrayList<Crop> harvestList = new ArrayList<Crop>();
@@ -452,6 +532,10 @@ public class FarmControl {
         return harvestList;
     }
     
+    /**
+     * Provides list of animals that are ready to harvest
+     * @return ArrayList of Animals
+     */
     private ArrayList<Animal> getAnimalsForHarvest() {
         ArrayList<Asset> assetList = farm.getAssetList();
         ArrayList<Animal> harvestList = new ArrayList<Animal>();
@@ -461,6 +545,34 @@ public class FarmControl {
             }
         }
         return harvestList;
-    }    
+    }
     
+    /**
+     * If there is a sick animal, return it
+     * @return Animal that is sick
+     */
+    private Animal getSickAnimal() {
+        ArrayList<Asset> al = farm.getAssetList();
+        for(Asset a : al) {
+            if (a instanceof Animal && a.isDiseased()) {
+                return (Animal) a;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * If there is a sick crop, return it
+     * @return Animal that is sick
+     */
+    private Crop getSickCrop() {
+        ArrayList<Asset> al = farm.getAssetList();
+        for(Asset a : al) {
+            if (a instanceof Crop && a.isDiseased()) {
+                return (Crop) a;
+            }
+        }
+        return null;
+    }
+        
 }
