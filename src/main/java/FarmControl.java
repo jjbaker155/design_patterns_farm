@@ -35,21 +35,23 @@ public class FarmControl {
     //cost to buy an acre
     private final static int ACRE_COST = 1000;
     //farmer daily pay
-    private final static int FARMER_PER_DIEM = 50;
+    private final static int FARMER_PER_DIEM = 100;
     //Farmer to Acre ratio
     private final static double FARMER_PURCHASE_TRIGGER = 0.4;
     //days between harvests for renewable assets
     public static final int DEFAULT_HARVEST_DAYS = 3;
     //chance animal will get sick
-    private final double ANIMAL_SICKNESS_CHANCE = 0.25;
+    private final double ANIMAL_SICKNESS_CHANCE = 0.70;
     //chance crop will get sick
-    private final double CROP_SICKNESS_CHANCE = 0.20;
+    private final double CROP_SICKNESS_CHANCE = 0.60;
+    //chance of healing asset
+    private final double ASSET_HEAL_CHANCE = 0.15;
     //for report building
     private final String REPORT_ITEM_SEPERATOR = "\n-------------------";
     private final String REPORT_STAR_SEPERATOR = "\n*****************" + 
     "*************";
     
-    private Random rand;
+    private static Random rand = new Random();
     private Farm farm;
     private FarmerControl farmerControl;
     private int day;
@@ -149,32 +151,54 @@ public class FarmControl {
             buyAcre();
         }
         farm.addAsset(a);
-        this.dayReportAdd(a.getTypeName() + " purchased.");
+        this.dayReportAdd(a.getTypeName() + " purchased. \nDeduct" + a.getCost());
+        farm.deductMoney(a.getCost());
     }
     
     
     /**
      * Run through Day Sequence
+     * @return report
      * @throws AssetAlreadyDeadException
      */
-    private void runDay() throws AssetAlreadyDeadException {
-        int totalCropEarnings = harvestCrops();
-        
-        
-        //harvest and collect
-        
-        //reorder dead assets (do not clear acreage)
-        //try to heal
-        //payroll
-        //should hire farmer?
-        //should buy acre?
-        
+    public String runDay() throws AssetAlreadyDeadException {
+        //add some summary to day report
+        harvestCrops();
+        harvestAnimals();
+        reOrderAllPerished();
+        healAnimal();
+        healCrop();
+        payFarmers();
+        if(shouldHireFarmer()) {
+            hireRandomFarmer();
+        }
+        if(shouldBuyAsset()) {
+            purchaseRandomAsset();
+        }
+        if(shouldBuyAcre()) {
+            buyAcre();
+        }
+        return dayReport.toString();
     }
     
-    private void runNight() {
-        //clear dead assets
-        //chance for disease (one living asset per acre)
-        //chance for predator (one living asset per acre)
+    /**
+     * Run through Night Sequence
+     * @return String report
+     * @throws AssetAlreadyDeadException
+     */
+    public String runNight() throws AssetAlreadyDeadException{
+        makeAnimalSick();
+        makeCropSick();
+        return nightReport.toString();
+    }
+    
+    /**
+     * Pay the farmer for their work on the farm
+     */
+    public void payFarmers() {
+        int payRoll = farm.getFarmerCount() * FARMER_PER_DIEM;
+        dayReportAdd(farm.getFarmerCount() + " farmers paid.\nTotal: " + payRoll);
+        farm.deductMoney(payRoll);
     }
     
     /**
@@ -194,7 +218,7 @@ public class FarmControl {
     }
   
     /**
-     * Harvest all crops that qualify and returning the proceeds
+     * Harvest all crops that qualify and return the proceeds
      * @return int the proceeds
      * @throws AssetAlreadyDeadException
      */
@@ -223,11 +247,12 @@ public class FarmControl {
         dayReportAdd("Merchant farmer bonus = " + merchantBonus + "\n");
         double multiplier = bonus + merchantBonus + 1.0;
         double p = proceeds * multiplier;
+        dayReportAdd("Total crop earnings;" + p);
         return (int) p;
     }
     
     /**
-     * Harvest all animals that qualify and returning the proceeds
+     * Harvest all animals that qualify and return the proceeds
      * @return int the proceeds
      * @throws AssetAlreadyDeadException
      */
@@ -249,12 +274,13 @@ public class FarmControl {
             int assetValue = a.harvest(); 
             proceeds += assetValue;
             dayReportAdd("Harvest " + a.getTypeName() + "\n" + "Harvest Type:"
-            + harvestType + "Value: " + assetValue);
+            + harvestType + "(animal slaughtered)\nValue: " + assetValue);
         }
-        dayReportAdd("Animal farmer bonus = " + bonus + "\n");
-        dayReportAdd("Merchant farmer bonus = " + merchantBonus + "\n");
+        dayReportAdd("Animal farmer bonus = " + bonus);
+        dayReportAdd("Merchant farmer bonus = " + merchantBonus);
         double multiplier = bonus + merchantBonus + 1;
         double p = proceeds * multiplier;
+        dayReportAdd("Total animal earnings;" + p);
         return (int) p;
     }
     
@@ -273,7 +299,23 @@ public class FarmControl {
      */
     public void reOrder(Asset a) {
         a.setAliveNewAsset();
+        this.dayReportAdd(a.getTypeName() + " reordered. \nDeduct " + a.getCost());
         farm.deductMoney(a.getCost());
+    }
+    
+    /**
+     * Reorder all perished assets
+     */
+    public void reOrderAllPerished() {
+        ArrayList<Asset> assetList = farm.getAssetList();
+        for(Asset a : assetList) {
+            if(a instanceof Animal && a.isDead())
+                reOrder(a);
+        }
+        for(Asset a : assetList) {
+            if(a instanceof Crop && a.isDead())
+                reOrder(a);
+        }
     }
     
     /**
@@ -316,13 +358,80 @@ public class FarmControl {
         return false;
     }
     
-    public boolean makeAnimalSick() {
+    /**
+     * Make random animal sick
+     * @return true if animal got sick
+     * @throws AssetAlreadyDeadException if animal is dead
+     */
+    public boolean makeAnimalSick() throws AssetAlreadyDeadException {
         double result = rand.nextDouble();
-        if (result >= ANIMAL_SICKNESS_CHANCE) {
-            int whichAnimal = rand.nextInt(this.numberOfAnimals());
+        if (result <= ANIMAL_SICKNESS_CHANCE && numberOfAnimals() > 0) {
+            int whichAnimal = rand.nextInt(numberOfAnimals());
+            this.getAliveAnimals().get(whichAnimal).setDiseased();
+            return true;
         }
         return false;
-        
+    }
+    
+    /**
+     * Make random crop sick
+     * @return true if crop got sick
+     * @throws AssetAlreadyDeadException if animal is dead
+     */
+    public boolean makeCropSick() throws AssetAlreadyDeadException {
+        double result = rand.nextDouble();
+        if (result <= CROP_SICKNESS_CHANCE && numberOfCrops() > 0) {
+            int whichCrop = rand.nextInt(numberOfCrops());
+            this.getAliveCrops().get(whichCrop).setDiseased();
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Attempts to heal an animal
+     * @return
+     * @throws AssetAlreadyDeadException
+     */
+    public boolean healAnimal() throws AssetAlreadyDeadException { 
+        Animal a = getSickAnimal();
+        double odds = ASSET_HEAL_CHANCE + veterinaryHealBonus();
+        if(a != null) {
+            if(rand.nextDouble() <= ASSET_HEAL_CHANCE) {
+                a.setAlive();
+                dayReportAdd("Sick " + a.getTypeName() + 
+                        " has been healed.");
+                return true;
+            }
+            a.setDead();
+            dayReportAdd("Sick " + a.getTypeName() + 
+                    " has perished.");
+            return false;
+        }
+        return false;
+    }
+    
+    /**
+     * Attempts to heal an crop
+     * @return
+     * @throws AssetAlreadyDeadException
+     */
+    public boolean healCrop() throws AssetAlreadyDeadException { 
+        Crop c = getSickCrop();
+        double odds = ASSET_HEAL_CHANCE + veterinaryHealBonus();
+        if(c != null) {
+            if(rand.nextDouble() <= ASSET_HEAL_CHANCE) {
+                c.setAlive();
+                dayReportAdd("Sick " + c.getTypeName() + 
+                        " has been healed.");
+                return true;
+            }
+            c.setDead();
+            dayReportAdd("Sick " + c.getTypeName() + 
+                    " has perished.");
+            return false;
+        }
+        return false;
     }
     
     /**
@@ -330,6 +439,9 @@ public class FarmControl {
      * @return double a % bonus for animal sale
      */
     private double animalHarvestBonus() {
+        if(getAnimalsForHarvest().size() == 0) {
+            return 0;
+        }
         return numberOfAnimalFarmers() / getAnimalsForHarvest().size() / 25.0;
     }
     
@@ -338,6 +450,9 @@ public class FarmControl {
      * @return double a % bonus for crop sale
      */
     private double cropHarvestBonus() {
+        if (getCropsForHarvest().size() == 0) {
+            return 0.0;
+        }
         return (numberOfCropFarmers() / getCropsForHarvest().size()) / 25.0;
     }
        
@@ -346,7 +461,10 @@ public class FarmControl {
      * @return
      */
     private double veterinaryHealBonus() {
-        return numberOfVeterinaryFarmers() / numberOfAnimals() / 15.0;
+        if (numberOfAnimals() == 0) {
+            return 0.0;
+        }
+        return numberOfVeterinaryFarmers() / numberOfAnimals() / 10.0;
     }
     
     /**
@@ -354,7 +472,10 @@ public class FarmControl {
      * @return
      */
     private double cropHealBonus() {
-        return numberOfCropFarmers() / numberOfCrops() / 25.0;
+        if(numberOfCrops() == 0) {
+            return 0.0;
+        }
+        return numberOfCropFarmers() / numberOfCrops() / 15.0;
     }
     
     /**

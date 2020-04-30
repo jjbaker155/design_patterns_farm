@@ -349,7 +349,16 @@ public class FarmControlTest {
         assertEquals(1508, farmControl.harvestAnimals());
     }
     
-    //@Test
-    //public void 
+    @Test
+    public void test18runDay() throws AssetAlreadyDeadException {
+        farmControl.runDay();
+    }
+    
+    @Test
+    public void test19runNight() throws AssetAlreadyDeadException {
+        farmControl.runNight();
+    }
+    
+    
     
 }
