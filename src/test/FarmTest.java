@@ -4,6 +4,8 @@ import main.java.Asset;
 import main.java.AssetFactory;
 import main.java.Farm;
 import main.java.FarmControl;
+import main.java.FarmHasWonException;
+import main.java.FarmIsBankruptException;
 import main.java.Farmer;
 import main.java.FarmerControl.FarmerKind;
 
@@ -11,10 +13,6 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import exceptions.AssetAlreadyDeadException;
-import exceptions.FarmHasWonException;
-import exceptions.FarmIsBankruptException;
 
 import static org.junit.Assert.*;
 
@@ -124,7 +122,7 @@ public class FarmTest {
      * @throws AssetAlreadyDeadException 
      */
     @Test
-    public void mTestAddAsset() throws AssetAlreadyDeadException {
+    public void mTestAddAsset() {
         Asset myAsset = af.createRandomAsset();
         farm.addAsset(myAsset);
         assertEquals(farm.removeAssetByIndex(0), myAsset);
@@ -135,14 +133,14 @@ public class FarmTest {
      * @throws AssetAlreadyDeadException 
      */
     @Test
-    public void oTestRemoveAsset() throws AssetAlreadyDeadException {
+    public void oTestRemoveAsset() {
         Asset myAsset = af.createRandomAsset();
         farm.addAsset(myAsset);
         assertTrue(farm.removeAsset(myAsset));
     }
     
     @Test
-    public void xTestGetAssetList() throws AssetAlreadyDeadException {
+    public void xTestGetAssetList() {
         Asset myAsset = af.createAsset(1);
         farm.addAsset(myAsset);
         ArrayList<Asset> list = farm.getAssetList();
@@ -154,7 +152,7 @@ public class FarmTest {
      * 
      */
     @Test
-    public void yTestGetAssetByIndex() throws AssetAlreadyDeadException {
+    public void yTestGetAssetByIndex() {
         Asset myAsset = af.createAsset(0);
         farm.addAsset(myAsset);
         assertEquals(farm.getAssetByIndex(0), myAsset);

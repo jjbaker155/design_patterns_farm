@@ -1,11 +1,11 @@
 package main.java;
 
 public class Sheep extends Animal {
-    private final static double LAND_NEEDED = 0.05;
-    private final static int COST = 75;
-    private final static int PROFIT = 175;
-    private final static double DISEASE_DEATH_RATE = 0.15;
-    private final static HarvestStrategy HS = RegularHarvest.getRegularHarvest();
+    public final static double LAND_NEEDED = 0.05;
+    public final static int COST = 75;
+    public final static int PROFIT = 175;
+    public final static double DISEASE_DEATH_RATE = 0.15;
+    public final static HarvestStrategy HS = RegularHarvest.getRegularHarvest();
     
     /**
      * Constructor sets default properties for a Sheep

@@ -10,7 +10,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import exceptions.AssetAlreadyDeadException;
 import main.java.Asset;
 import main.java.AssetFactory;
 import main.java.Cattle;
@@ -66,7 +65,7 @@ public class FarmControlTest {
      * @throws AssetAlreadyDeadException 
      */
     @Test
-    public void test3GenerateInitialAssets() throws AssetAlreadyDeadException {
+    public void test3GenerateInitialAssets() {
         farmControl.generateInitialAssets();
         ArrayList<Asset> assetList = farmControl.getFarm().getAssetList();
         assertTrue(assetList.get(FarmControl.INITIAL_ASSETS - 1) instanceof Asset);
@@ -78,7 +77,7 @@ public class FarmControlTest {
      * @throws AssetAlreadyDeadException 
      */
     @Test
-    public void test4purchaseRandomAsset() throws AssetAlreadyDeadException {
+    public void test4purchaseRandomAsset() {
         farmControl.purchaseRandomAsset();
         ArrayList<Asset> assetList = farmControl.getFarm().getAssetList();
         assertTrue(assetList.get(0) instanceof Asset);
@@ -95,39 +94,11 @@ public class FarmControlTest {
     }
     
     /**
-     * Test to see if the state of an asset changes to StateAlive
-     * after the asset is re-ordered
-     * @throws AssetAlreadyDeadException 
-     */
-    @Test
-    public void test6reOrderState() throws AssetAlreadyDeadException {
-        farmControl.generateInitialAssets();
-        Asset a = farm.getAssetByIndex(0);
-        a.getStateContext().setState(new StateDead());
-        farmControl.reOrder(a);
-        assertTrue(a.getStateContext().getState() instanceof StateAlive);
-    }
-    
-    /**
-     * Test to ensure re-ordering an asset will work
-     * @throws AssetAlreadyDeadException 
-     */
-    @Test
-    public void test7reOrderAge() throws AssetAlreadyDeadException {
-        farmControl.generateInitialAssets();
-        Asset a = farm.getAssetByIndex(0);
-        a.getStateContext().setState(new StateDead());
-        a.setAge(2);
-        farmControl.reOrder(a);
-        assertEquals(a.getAge(), 0);
-    }
-    
-    /**
      * Test harvesting one crop asset
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test8HarvestCrops() throws AssetAlreadyDeadException {
+    public void test8HarvestCrops() {
         Corn corn = (Corn) af.createAsset(4);
         corn.setAge(3);
         corn.setHarvestDays(0);
@@ -141,7 +112,7 @@ public class FarmControlTest {
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test9HarvestAnimals() throws AssetAlreadyDeadException {
+    public void test9HarvestAnimals() {
         Cattle cattle = (Cattle) af.createAsset(0);
         cattle.setAge(3);
         cattle.setHarvestDays(0);
@@ -155,7 +126,7 @@ public class FarmControlTest {
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test10HarvestWool() throws AssetAlreadyDeadException {
+    public void test10HarvestWool() {
         Sheep sheep = (Sheep) af.createAsset(2);
         sheep.setAge(3);
         sheep.setHarvestDays(0);
@@ -165,22 +136,11 @@ public class FarmControlTest {
     }
     
     /**
-     * Test asset already dead exception
-     * @throws AssetAlreadyDeadException
-     */
-    @Test (expected = AssetAlreadyDeadException.class)
-    public void test11HarvestDeadAsset() throws AssetAlreadyDeadException {
-        Asset asset = af.createAsset(0);
-        asset.setDead();
-        asset.harvest();
-    }
-    
-    /**
      * Tests the harvest of multiple crops but only if they qualify
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test12HarvestMultipleCrops() throws AssetAlreadyDeadException {
+    public void test12HarvestMultipleCrops() {
         Cattle cattle1 = (Cattle) af.createAsset("cattle"); 
         Hog hog1 = (Hog) af.createAsset("hog");
         
@@ -191,11 +151,11 @@ public class FarmControlTest {
         
         //adds 0 to harvest
         farm.addAsset(cattle1);
-        //adds 0 to harvest
+        
         farm.addAsset(hog1);
         hog1.setHarvestDays(0); 
         
-        //adds 650 to harvest
+        
         farm.addAsset(corn1);
         corn1.setHarvestDays(0);
         
@@ -203,11 +163,12 @@ public class FarmControlTest {
         farm.addAsset(corn2);
         corn2.setHarvestDays(1);
         
-        //adds 550 to harvest
+        
         farm.addAsset(soy1);
         soy1.setHarvestDays(0);
         
-        assertEquals(1200, farmControl.harvestCrops());
+        //Corn.PROFIT + Soy.PROFIT
+        assertEquals(Corn.PROFIT + Soy.PROFIT, farmControl.harvestCrops());
     }
     
     /**
@@ -215,7 +176,7 @@ public class FarmControlTest {
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test13HarvestMultipleAnimals() throws AssetAlreadyDeadException {
+    public void test13HarvestMultipleAnimals() {
         Cattle cattle1 = (Cattle) af.createAsset("cattle"); 
         Hog hog1 = (Hog) af.createAsset("hog");
         Sheep sheep1 = (Sheep) af.createAsset("sheep");
@@ -226,15 +187,15 @@ public class FarmControlTest {
         
         Soy soy1 = (Soy) af.createAsset("soy");
         
-        //adds 725 to harvest
+        
         farm.addAsset(cattle1);
         cattle1.setHarvestDays(0);
         
-        //adds 225 to harvest
+        
         farm.addAsset(hog1);
         hog1.setHarvestDays(0); 
         
-        //adds 175 to harvest
+        
         farm.addAsset(sheep1);
         sheep1.setHarvestDays(0);
         
@@ -254,7 +215,8 @@ public class FarmControlTest {
         farm.addAsset(soy1);
         soy1.setHarvestDays(0);
         
-        assertEquals(1125, farmControl.harvestAnimals());
+        //Sheep.PROFIT + Hog.PROFIT + Cattle.PROFIT
+        assertEquals(Sheep.PROFIT + Hog.PROFIT + Cattle.PROFIT, farmControl.harvestAnimals());
     }
     
     
@@ -263,7 +225,7 @@ public class FarmControlTest {
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test14MerchantBonus() throws AssetAlreadyDeadException {
+    public void test14MerchantBonus() {
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
@@ -275,9 +237,9 @@ public class FarmControlTest {
         cattle1.setHarvestDays(0);
         
         //3 merchants -> expected merchant bonus is .12
-        //expected harvest: 725 * 1.12 = 812
+        //expected harvest: Cattle.PROFIT * 1.12 = 812
         
-        assertEquals(812, farmControl.harvestAnimals());
+        assertTrue(Cattle.PROFIT * 1.12 == farmControl.harvestAnimals());
     }
     
     /**
@@ -285,20 +247,19 @@ public class FarmControlTest {
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test15MerchantBonus() throws AssetAlreadyDeadException {
+    public void test15MerchantBonus() {
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         Corn corn1 = (Corn) af.createAsset("corn");
         
         
-        //adds 725 to harvest
         farm.addAsset(corn1);
         corn1.setHarvestDays(0);
         
         //3 merchants -> expected merchant bonus is .08
-        //expected harvest: 650 * 1.08 = 702
+        //expected harvest: Corn.PROFIT * 1.08
         
-        assertEquals(702, farmControl.harvestCrops());
+        assertTrue(Corn.PROFIT * 1.08 == farmControl.harvestCrops());
     }
     
     /**
@@ -306,7 +267,7 @@ public class FarmControlTest {
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test16CropBonus() throws AssetAlreadyDeadException {
+    public void test16CropBonus() {
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
@@ -314,14 +275,14 @@ public class FarmControlTest {
         Corn corn1 = (Corn) af.createAsset("corn");
         
         
-        //adds 650 to harvest
         farm.addAsset(corn1);
         corn1.setHarvestDays(0);
         
         //3 crop farmers, 1 crop -> expected crops bonus is .12
-        //expected harvest: 650 * 1.12 = 728
+        //expected harvest: Corn.PROFIT * 1.12 = 728
         
-        assertEquals(728, farmControl.harvestCrops());
+        
+        assertTrue(Corn.PROFIT * 1.12 == farmControl.harvestCrops());
     }
     
     /**
@@ -329,36 +290,50 @@ public class FarmControlTest {
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test17AnimalBonus() throws AssetAlreadyDeadException
-    {
+    public void test17AnimalBonus() {
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.ANIMAL));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.ANIMAL));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
         Cattle cattle1 = (Cattle) af.createAsset("cattle");
-        Cattle cattle2 = (Cattle) af.createAsset("cattle");
         
-        //adds 1450 to harvest
         farm.addAsset(cattle1);
         cattle1.setHarvestDays(0);
-        farm.addAsset(cattle2);
-        cattle2.setHarvestDays(0);
         
         //2 animal farmers, 2 animals -> expected animal bonus is 0.04
-        //expected harvest: 1450 * 1.04 = 1508
+        //expected harvest: Cattle.PROFIT * 1.04 
+        //(animalHarvestBonus() + 1) * Cattle.PROFIT 
         
-        assertEquals(1508, farmControl.harvestAnimals());
+        assertTrue((farmControl.animalHarvestBonus() + 1.0) * Cattle.PROFIT == 
+                farmControl.harvestAnimals());
     }
     
     @Test
-    public void test18runDay() throws AssetAlreadyDeadException {
+    public void test18runDay() {
         farmControl.runDay();
     }
     
     @Test
-    public void test19runNight() throws AssetAlreadyDeadException {
+    public void test19runNight() {
         farmControl.runNight();
     }
     
+    @Test
+    public void test20IncrementAnimalAge() {
+        Cattle cattle1 = (Cattle) af.createAsset("cattle");
+        Cattle cattle2 = (Cattle) af.createAsset("cattle");
+        Corn corn1 = (Corn) af.createAsset("corn");
+        
+        farm.addAsset(cattle1);
+        farmControl.incrementDay();
+        
+        farm.addAsset(cattle2);
+        farmControl.incrementDay();
+        
+        farm.addAsset(corn1);
+        
+        assertTrue(cattle1.getAge() ==  2 && cattle2.getAge() == 1 && corn1.getAge() == 0);
+        
+    } 
     
     
 }

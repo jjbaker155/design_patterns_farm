@@ -2,9 +2,6 @@ package main.java;
 
 import java.util.ArrayList;
 
-import exceptions.FarmHasWonException;
-import exceptions.FarmIsBankruptException;
-
 /**
  * The single farm
  * @author jjbaker4
@@ -155,6 +152,11 @@ public class Farm {
         return farmers.remove(f);
     }
     
+    /**
+     * Removes the specific asset from the list if it is present
+     * @param a
+     * @return true if successful
+     */
     public boolean removeAsset(Asset a) {
         return assets.remove(a);
     }

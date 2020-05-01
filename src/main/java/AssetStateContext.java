@@ -1,7 +1,5 @@
 package main.java;
 
-import exceptions.AssetAlreadyDeadException;
-
 public class AssetStateContext {
     
     private AssetState myState;

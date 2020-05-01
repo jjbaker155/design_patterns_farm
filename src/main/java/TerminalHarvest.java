@@ -1,7 +1,5 @@
 package main.java;
 
-import exceptions.AssetAlreadyDeadException;
-
 public class TerminalHarvest implements HarvestStrategy {
 
   //this strategy is also a singleton
@@ -30,13 +28,8 @@ public class TerminalHarvest implements HarvestStrategy {
      * @throws AssetAlreadyDeadException is the asset is already dead
      */
     @Override
-    public int harvest(Asset a) throws AssetAlreadyDeadException {
-        // change a to dead
-        if (a.isDead()) {
-            throw new AssetAlreadyDeadException();
-        }
+    public int harvest(Asset a) {
         a.setDead();
-        //return sale amount
         return a.getProfit();
     }
 

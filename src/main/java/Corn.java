@@ -3,13 +3,13 @@ package main.java;
 public class Corn extends Crop{
     
     //land needed for crop
-    private final static double LAND_NEEDED = 0.2;
+    public final static double LAND_NEEDED = 0.2;
     //cost of one unit
-    private final static int COST = 150;
+    public final static int COST = 150;
     //profit per harvest
-    private final static int PROFIT = 475;
+    public final static int PROFIT = 475;
     //base disease death rate
-    private final static double DISEASE_DEATH_RATE = .45;
+    public final static double DISEASE_DEATH_RATE = .45;
     private final static HarvestStrategy HS = RegularHarvest.getRegularHarvest();
     
     

@@ -3,8 +3,6 @@ package main.java;
 import java.util.ArrayList;
 import java.util.Random;
 
-import exceptions.AssetAlreadyDeadException;
-import exceptions.FarmIsBankruptException;
 import main.java.FarmerControl.FarmerKind;
 
 /**
@@ -104,11 +102,7 @@ public class FarmControl {
             farmControlSoleInstance = new FarmControl();
             farmControlSoleInstance.attachFarmerControl();
             farmControlSoleInstance.generateInitialFarmers();
-            try {
-                farmControlSoleInstance.generateInitialAssets();
-            } catch (AssetAlreadyDeadException e) {
-                e.printStackTrace();
-            }
+            farmControlSoleInstance.generateInitialAssets();
         }
         return farmControlSoleInstance;
     }
@@ -147,9 +141,8 @@ public class FarmControl {
     
     /**
      * Generate initial assets for your farm
-     * @throws AssetAlreadyDeadException 
      */
-    public void generateInitialAssets() throws AssetAlreadyDeadException {
+    public void generateInitialAssets() {
         dayReportAdd("Initial Asset Purchase:");
         dayReportAdd(REPORT_ITEM_SEPERATOR);
         for (int i = 0; i < INITIAL_ASSETS; i++) {
@@ -172,9 +165,8 @@ public class FarmControl {
      * Add a random asset to your farm
      * @param Farm to add the asset to
      * @param String representing asset type
-     * @throws AssetAlreadyDeadException 
      */
-    public void purchaseRandomAsset() throws AssetAlreadyDeadException {
+    public void purchaseRandomAsset() {
         Asset a = af.createRandomAsset();
         if(farm.getSpaceAvailable() < a.getLandNeeded()) {
             buyAcre();
@@ -188,9 +180,8 @@ public class FarmControl {
     /**
      * Run through Day Sequence
      * @return report
-     * @throws AssetAlreadyDeadException
      */
-    public String runDay() throws AssetAlreadyDeadException {
+    public void runDay() {
         //todo: add some summary to day report
         //todo: place try/catch in methods where it will be useful
         harvestCrops();
@@ -203,12 +194,7 @@ public class FarmControl {
             hireRandomFarmer();
         }
         if(shouldBuyAsset()) {
-            //todo: place try/catch in methods where it will be more useful
-            try {
-                purchaseRandomAsset();
-            } catch (AssetAlreadyDeadException e) {
-                System.out.println("Asset is already dead. **back to unit testing**");
-            }
+            purchaseRandomAsset();
         }
         if(shouldBuyAcre()) {
             buyAcre();
@@ -230,23 +216,16 @@ public class FarmControl {
             dayReportAdd("\nReached cycle max. Simulation ended inconclusively.");
             gameOn = false;
         }
-        return dayReport.toString();
+        incrementDay();
     }
     
     /**
      * Run through Night Sequence
      * @return String report
-     * @throws AssetAlreadyDeadException
      */
-    public String runNight() {
-        //todo: place try/catch in methods where it will be more useful
-        try {
-            makeAnimalSick();
-            makeCropSick();
-        } catch (AssetAlreadyDeadException e) {
-            System.out.println("Asset is already dead. **back to unit testing**");
-        }
-        return nightReport.toString();
+    public void runNight() {
+        makeAnimalSick();
+        makeCropSick();
     }
     
     /**
@@ -277,9 +256,8 @@ public class FarmControl {
     /**
      * Harvest all crops that qualify and return the proceeds
      * @return int the proceeds
-     * @throws AssetAlreadyDeadException
      */
-    public int harvestCrops() throws AssetAlreadyDeadException {
+    public int harvestCrops() {
         dayReportAdd("Crop Harvest:\n" + REPORT_ITEM_SEPERATOR);
         double bonus = cropHarvestBonus();
         double merchantBonus = merchantFarmerBonus();
@@ -292,8 +270,7 @@ public class FarmControl {
             if (c.isHarvestTerminal()) {
                 harvestType = " Terminal \n";
             }
-            else
-            {
+            else {
                 harvestType = " Normal \n";
             }
             int assetValue = c.harvest(); 
@@ -313,9 +290,8 @@ public class FarmControl {
     /**
      * Harvest all animals that qualify and return the proceeds
      * @return int the proceeds
-     * @throws AssetAlreadyDeadException
      */
-    public int harvestAnimals() throws AssetAlreadyDeadException {
+    public int harvestAnimals() {
         dayReportAdd("Animal Harvest:\n" + REPORT_ITEM_SEPERATOR);
         double bonus = animalHarvestBonus();
         double merchantBonus = merchantFarmerBonus();
@@ -347,13 +323,14 @@ public class FarmControl {
     }
        
     /**
-     * Reorder the animal. More formally, it sets it to alive and deducts the cost
+     * Reorder the asset.
      * @param a
      */
     public void reOrder(Asset a) {
-        a.setAliveNewAsset();
-        this.dayReportAdd(a.getTypeName() + " reordered. \nDeduct " + a.getCost());
+        farm.removeAsset(a);
+        farm.addAsset(af.createAssetOfType(a));
         farm.deductMoney(a.getCost());
+        this.dayReportAdd(a.getTypeName() + " reordered. \nDeduct " + a.getCost());
     }
     
     /**
@@ -414,15 +391,14 @@ public class FarmControl {
     /**
      * Make random animal sick
      * @return true if animal got sick
-     * @throws AssetAlreadyDeadException if animal is dead
      */
-    public boolean makeAnimalSick() throws AssetAlreadyDeadException {
+    public boolean makeAnimalSick() {
         double result = rand.nextDouble();
         if (result <= ANIMAL_SICKNESS_CHANCE && numberOfAnimals() > 0) {
             int whichAnimal = rand.nextInt(numberOfAnimals());
-            Animal a = getAliveAnimals().get(whichAnimal); 
+            Animal a = getHealthyAnimals().get(whichAnimal); 
             a.setDiseased();
-            nightReportAdd("A " + a.getTypeName() + " has become ill.");
+            dayReportAdd("A " + a.getTypeName() + " has become ill.");
             return true;
         }
         return false;
@@ -431,13 +407,12 @@ public class FarmControl {
     /**
      * Make random crop sick
      * @return true if crop got sick
-     * @throws AssetAlreadyDeadException if animal is dead
      */
-    public boolean makeCropSick() throws AssetAlreadyDeadException {
+    public boolean makeCropSick() {
         double result = rand.nextDouble();
         if (result <= CROP_SICKNESS_CHANCE && numberOfCrops() > 0) {
             int whichCrop = rand.nextInt(numberOfCrops());
-            Crop c = this.getAliveCrops().get(whichCrop); 
+            Crop c = this.getHealthyCrops().get(whichCrop); 
             c.setDiseased();
             nightReportAdd("A " + c.getTypeName() + " field has become ill.");
             return true;
@@ -448,14 +423,14 @@ public class FarmControl {
     /**
      * Attempts to heal an animal
      * @return
-     * @throws AssetAlreadyDeadException
      */
-    public boolean healAnimal() throws AssetAlreadyDeadException { 
+    public boolean healAnimal() { 
         Animal a = getSickAnimal();
         double odds = ASSET_HEAL_CHANCE + veterinaryHealBonus();
         if(a != null) {
             if(rand.nextDouble() <= ASSET_HEAL_CHANCE) {
                 a.setAlive();
+                a.setHarvestDays(DEFAULT_HARVEST_DAYS);
                 dayReportAdd("Sick " + a.getTypeName() + 
                         " has been healed.");
                 return true;
@@ -471,14 +446,14 @@ public class FarmControl {
     /**
      * Attempts to heal an crop
      * @return
-     * @throws AssetAlreadyDeadException
      */
-    public boolean healCrop() throws AssetAlreadyDeadException { 
+    public boolean healCrop() { 
         Crop c = getSickCrop();
         double odds = ASSET_HEAL_CHANCE + veterinaryHealBonus();
         if(c != null) {
             if(rand.nextDouble() <= ASSET_HEAL_CHANCE) {
                 c.setAlive();
+                c.setHarvestDays(DEFAULT_HARVEST_DAYS);
                 dayReportAdd("Sick " + c.getTypeName() + 
                         " has been healed.");
                 return true;
@@ -495,7 +470,7 @@ public class FarmControl {
      * Increase harvest price for animals 
      * @return double a % bonus for animal sale
      */
-    private double animalHarvestBonus() {
+    public double animalHarvestBonus() {
         if(getAnimalsForHarvest().size() == 0) {
             return 0;
         }
@@ -517,7 +492,7 @@ public class FarmControl {
      * Increase odds of animal survival when healing
      * @return
      */
-    private double veterinaryHealBonus() {
+    public double veterinaryHealBonus() {
         if (numberOfAnimals() == 0) {
             return 0.0;
         }
@@ -706,8 +681,28 @@ public class FarmControl {
     /**
      * Resets the night report for tomorrow
      */
-    private void resetNighReport() {
+    private void resetNightReport() {
         nightReport = new StringBuilder();
+    }
+    
+    /**
+     * Returns day report as sting and resets it for another cycle
+     * @return String day report
+     */
+    public String reportDay() {
+        String dr = dayReport.toString();
+        resetDayReport();
+        return dr;
+    }
+    
+    /**
+     * Returns day report as sting and resets it for another cycle
+     * @return String day report
+     */
+    public String reportNight() {
+        String nr = nightReport.toString();
+        resetNightReport();
+        return nr;
     }
     
     /**
@@ -776,16 +771,43 @@ public class FarmControl {
         ArrayList<Animal> list = getAliveAnimals();
         for (Animal a : list) {
             if (a.getAge() >= a.AGE_TO_DIE) {
-                try {
-                    a.setDead();
-                    dayReportAdd("A " + a.getTypeName() + 
-                            " has died of old age. A replacement will be reordered");
-                } catch (AssetAlreadyDeadException e) {
-                    e.printStackTrace();
-                }
+                a.setDead();
+                dayReportAdd("A " + a.getTypeName() + 
+                        " has died of old age. A replacement will be reordered");
             }
         }
     }
+    
+    /**
+     * Return a list of crops that are not sick and are alive
+     * @return
+     */
+    public ArrayList<Crop> getHealthyCrops() {
+        ArrayList<Asset> list = farm.getAssetList();
+        ArrayList<Crop> outputList = new ArrayList<Crop>();
+        for (Asset a : list) {
+            if(a instanceof Crop && a.isHealthy()) {
+                outputList.add((Crop) a);
+            }
+        }
+        return outputList;
+    }
+    
+    /**
+     * Return a list of crops that are not sick and are alive
+     * @return
+     */
+    public ArrayList<Animal> getHealthyAnimals() {
+        ArrayList<Asset> list = farm.getAssetList();
+        ArrayList<Animal> outputList = new ArrayList<Animal>();
+        for (Asset a : list) {
+            if(a instanceof Animal && a.isHealthy()) {
+                outputList.add((Animal) a);
+            }
+        }
+        return outputList;
+    }
+    
     
     /**
      * Returns indicator is the simulation should continue.
@@ -793,6 +815,19 @@ public class FarmControl {
      */
     public boolean isGameOn() {
         return gameOn;
+    }
+    
+    /**
+     * Increment the age of each living asset
+     */
+    public void incrementDay() {
+        ArrayList<Asset> list = farm.getAssetList();
+        for (Asset a : list) {
+            if(a.isAlive()) {
+                a.incrementDay();
+            }
+        }
+        day++;
     }
         
 }

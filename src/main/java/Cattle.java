@@ -1,10 +1,10 @@
 package main.java;
 
 public class Cattle extends Animal {
-    private static final double LAND_NEEDED = 0.1;
-    private static final int COST = 175;
-    private static final int PROFIT = 525;
-    private static final double DISEASE_DEATH_RATE = 0.4;
+    public static final double LAND_NEEDED = 0.1;
+    public static final int COST = 175;
+    public static final int PROFIT = 525;
+    public static final double DISEASE_DEATH_RATE = 0.4;
     private final static HarvestStrategy HS = TerminalHarvest.getTerminalHarvest();
     
     /**

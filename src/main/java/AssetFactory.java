@@ -2,8 +2,6 @@ package main.java;
 
 import java.util.Random;
 
-import exceptions.AssetAlreadyDeadException;
-
 public class AssetFactory {
     
     public enum AssetKind {CATTLE, HOG, SHEEP, DAIRYCOW, CORN, SOY}
@@ -36,7 +34,7 @@ public class AssetFactory {
      * @return
      * @throws AssetAlreadyDeadException 
      */
-    public Asset createAsset(int num) throws AssetAlreadyDeadException {
+    public Asset createAsset(int num) {
         Asset a = null;
         if(num < 0 || num > AssetKind.values().length-1) {
             return null;
@@ -59,7 +57,6 @@ public class AssetFactory {
         if(num == AssetKind.SOY.ordinal()) {
             a = new Soy();
         }
-        a.setAliveNewAsset();
         return a;
     }
     
@@ -70,7 +67,7 @@ public class AssetFactory {
      * @return
      * @throws AssetAlreadyDeadException 
      */
-    public Asset createAsset(String s) throws AssetAlreadyDeadException {
+    public Asset createAsset(String s) {
         Asset a = null;
         if(s.equalsIgnoreCase("cattle")) {
             a = new Cattle();
@@ -90,7 +87,7 @@ public class AssetFactory {
         if(s.equalsIgnoreCase("soy")) {
             a = new Soy();
         }
-        a.setAliveNewAsset();
+        //a.setAliveNewAsset();
         return a;
     }
     
@@ -99,9 +96,14 @@ public class AssetFactory {
      * @return
      * @throws AssetAlreadyDeadException 
      */
-    public Asset createRandomAsset() throws AssetAlreadyDeadException {
+    public Asset createRandomAsset() {
         int assetNum = rand.nextInt(AssetKind.values().length);
         return createAsset(assetNum);
     }
+    
+    public Asset createAssetOfType(Asset a) {
+        return createAsset(a.getTypeName());
+    }
+
     
 }
