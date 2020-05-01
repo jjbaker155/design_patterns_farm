@@ -1,3 +1,9 @@
+/**
+ * Represents a Farmer
+ * @author jjbaker4
+ * @version 1.0
+ */
+
 package main.java;
 
 import main.java.FarmerControl.FarmerKind;
@@ -7,15 +13,15 @@ public class Farmer {
     private FarmerKind kind;
     
     /**
-     * Farmer constructor
-     * @param type of farmer
+     * Farmer constructor.
+     * @param k type of farmer
      */
     public Farmer(FarmerKind k) {
         kind = k;
     }
     
     /**
-     * Return the kind of farmer
+     * Return the kind of farmer.
      * @return FarmerKind enum
      */
     public FarmerKind getFarmerKind() {
@@ -23,7 +29,7 @@ public class Farmer {
     }
     
     /**
-     * A string representation of the farmer type
+     * A string representation of the farmer type.
      * @return
      */
     public String getTypeName() {

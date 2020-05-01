@@ -1,6 +1,11 @@
 package main.java;
+/**
+ * An asset state for when asset is alive.
+ * @author jjbaker4
+ * @version 1.0
+ */
 
-public class StateAlive implements AssetState{
+public class StateAlive implements AssetState {
 
     public StateAlive() {
         // TODO Auto-generated constructor stub

@@ -1,5 +1,11 @@
 package main.java;
 
+/**
+ * This is a harvest strategy. To be employed by crops and animals
+ * that don't have to be killed to be sold. It is a singleton and supports a strategy pattern
+ * @author jjbaker4
+ * @version 1.0
+ */
 public class RegularHarvest implements HarvestStrategy {
     
     //this strategy is also a singleton
@@ -22,8 +28,8 @@ public class RegularHarvest implements HarvestStrategy {
     }
     
     /**
-     * Harvest the asset
-     * @param Asset to harvest
+     * Harvest the asset.
+     * @param a Asset to harvest
      * @return int the amount of money earned
      * @throws AssetAlreadyDeadException  is the asset is dead
      */

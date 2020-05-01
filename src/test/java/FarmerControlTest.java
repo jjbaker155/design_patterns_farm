@@ -32,13 +32,7 @@ public class FarmerControlTest {
         Farmer f = farmerControl.createFarmer(FarmerKind.ANIMAL);
         assertEquals(f.getFarmerKind(), FarmerKind.ANIMAL);
     }
-    
-    @Test
-    public void createDairyFarmerTest() {
-        Farmer f = farmerControl.createFarmer(FarmerKind.DAIRY);
-        assertEquals(f.getFarmerKind(), FarmerKind.DAIRY);
-    }
-    
+
     @Test
     public void createMercahantFarmerTest() {
         Farmer f = farmerControl.createFarmer(FarmerKind.MERCHANT);

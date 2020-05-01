@@ -14,6 +14,7 @@ import main.java.Asset;
 import main.java.AssetFactory;
 import main.java.Cattle;
 import main.java.Corn;
+import main.java.DairyCow;
 import main.java.Farm;
 import main.java.FarmControl;
 import main.java.FarmHasWonException;
@@ -23,6 +24,7 @@ import main.java.FarmerControl;
 import main.java.FarmerControl.FarmerKind;
 import main.java.Hog;
 import main.java.Sheep;
+import main.java.SimulationInconclusiveException;
 import main.java.Soy;
 import main.java.StateAlive;
 import main.java.StateDead;
@@ -114,10 +116,11 @@ public class FarmControlTest {
     /**
      * Test harvest one animal
      * @throws FarmHasWonException 
+     * @throws FarmIsBankruptException 
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test9HarvestAnimals() throws FarmHasWonException {
+    public void test9HarvestAnimals() throws FarmHasWonException, FarmIsBankruptException {
         Cattle cattle = (Cattle) af.createAsset(0);
         cattle.setAge(3);
         cattle.setHarvestDays(0);
@@ -179,10 +182,11 @@ public class FarmControlTest {
     /**
      * Tests the harvest of multiple Animals but only of they qualify
      * @throws FarmHasWonException 
+     * @throws FarmIsBankruptException 
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test13HarvestMultipleAnimals() throws FarmHasWonException {
+    public void test13HarvestMultipleAnimals() throws FarmHasWonException, FarmIsBankruptException {
         Cattle cattle1 = (Cattle) af.createAsset("cattle"); 
         Hog hog1 = (Hog) af.createAsset("hog");
         Sheep sheep1 = (Sheep) af.createAsset("sheep");
@@ -229,10 +233,11 @@ public class FarmControlTest {
     /**
      * Test the merchant farmer bonus for the sale of animals
      * @throws FarmHasWonException 
+     * @throws FarmIsBankruptException 
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test14MerchantBonus() throws FarmHasWonException {
+    public void test14MerchantBonus() throws FarmHasWonException, FarmIsBankruptException {
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
@@ -297,10 +302,11 @@ public class FarmControlTest {
     /**
      * Test the crop farmer bonus for the sale of crops
      * @throws FarmHasWonException 
+     * @throws FarmIsBankruptException 
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test17AnimalBonus() throws FarmHasWonException {
+    public void test17AnimalBonus() throws FarmHasWonException, FarmIsBankruptException {
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.ANIMAL));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.ANIMAL));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
@@ -318,10 +324,10 @@ public class FarmControlTest {
     }
     
     @Test
-    public void test18runDay() throws FarmHasWonException, FarmIsBankruptException {
+    public void test18runDay() throws FarmHasWonException, FarmIsBankruptException, SimulationInconclusiveException {
         farmControl.runDay();
     }
-
+    
     @Test
     public void test20IncrementAnimalAge() {
         Cattle cattle1 = (Cattle) af.createAsset("cattle");
@@ -340,5 +346,29 @@ public class FarmControlTest {
         
     } 
     
+    /**
+     * Tests Assetfactory and Farm for the addition of new assets
+     * that were formed has new given an existing one
+     */
+    @Test
+    public void test21Reorder() {
+        Cattle cattle1 = (Cattle) af.createAsset("cattle");
+        Corn corn1 = (Corn) af.createAsset("corn");
+        Sheep sheep1 = (Sheep) af.createAsset("sheep");
+        Soy soy1 = (Soy) af.createAsset("soy");
+        Hog hog1 = (Hog) af.createAsset("hog");
+        DairyCow cow1 = (DairyCow) af.createAsset("dairy cow");
+        
+        Sheep sheep2 = (Sheep) af.createAssetOfType(sheep1);
+        Corn corn2 = (Corn) af.createAssetOfType(corn1);
+        Cattle cattle2 = (Cattle) af.createAssetOfType(cattle1);
+        Soy soy2 = (Soy) af.createAssetOfType(soy1);
+        Hog hog2 = (Hog) af.createAssetOfType(hog1);
+        DairyCow cow2 = (DairyCow) af.createAssetOfType(cow1);
+        
+        assertTrue(farm.addAsset(sheep2) && farm.addAsset(corn2) &&
+                farm.addAsset(cattle2) && farm.addAsset(soy2) &&
+                farm.addAsset(hog2) && farm.addAsset(cow2));
+    }
     
 }

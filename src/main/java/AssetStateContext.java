@@ -1,3 +1,7 @@
+/**
+ * State context for state pattern that treats assets differently depsning on their state. 
+ */
+
 package main.java;
 
 public class AssetStateContext {
@@ -7,16 +11,17 @@ public class AssetStateContext {
     public AssetStateContext() {
         
     }
+    
     /**
-     * Sets the state of the asset that holds this context object
-     * @param newState the new state
+     * Sets the state of the asset that holds this context object.
+     * @param newState myState the new state
      */
     public void setState(AssetState newState) {
         myState = newState;
     }
     
     /**
-     * Returns the current AssetState
+     * Returns the current AssetState.
      * @return current state of the asset
      */
     public AssetState getState() {

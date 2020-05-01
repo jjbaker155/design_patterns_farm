@@ -1,9 +1,14 @@
 package main.java;
 
+/**
+ * State for when asset is sick.
+ * @author jjbaker4
+ * @version 1.0
+ *
+ */
 public class StateDiseased implements AssetState {
 
     public StateDiseased() {
-        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -13,13 +18,11 @@ public class StateDiseased implements AssetState {
 
     @Override
     public boolean isDead() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean isSick() {
-        // TODO Auto-generated method stub
         return true;
     }
     

@@ -42,19 +42,19 @@ public class FarmTest {
     }
     
     @Test
-    public void aTestAddFarmer() {
+    public void test1AddFarmer() {
         farm.addFarmer(farmer2);
         Farmer retrievedFarmer = farm.getFarmerList().get(0);
         assertTrue(farmer2.equals(retrievedFarmer));
     }
     
     @Test
-    public void bTestInitialFarmerList() {
+    public void test2InitialFarmerList() {
         assertEquals(0, farm.getFarmerCount());
     }
     
     @Test
-    public void cTestRemoveFarmer() {
+    public void test3RemoveFarmer() {
         farm.addFarmer(farmer1);
         farm.addFarmer(farmer2);
         farm.removeFarmer(farmer1);
@@ -62,58 +62,58 @@ public class FarmTest {
     }
     
     @Test
-    public void dTestAddAcre() {
+    public void test4AddAcre() {
         farm.addAcre();
         assertTrue(farm.getSize() == 2.0);
     }
     
     @Test
-    public void eTestAcreProductivity() {
+    public void test5AcreProductivity() {
         farm.addFarmer(farmer1);
         farm.addFarmer(farmer2);
         assertTrue(0.6 == farm.acreProductivity());
     }
     
     @Test
-    public void fTestSetAcreage() {
+    public void test6SetAcreage() {
         farm.setAcreage(5);
         assertTrue(5.0 == farm.getAcreage());
     }
     
     @Test
-    public void gTestRemoveMoney() throws FarmIsBankruptException {
+    public void test7RemoveMoney() throws FarmIsBankruptException {
         farm.setMoney(1000);
         farm.deductMoney(1);
         assertEquals(999, farm.getMoney());
     }
     
     @Test (expected = FarmIsBankruptException.class)
-    public void hTestBankrupt() throws FarmIsBankruptException {
+    public void test8Bankrupt() throws FarmIsBankruptException {
         farm.setMoney(1000);
         farm.deductMoney(1001);
     }
     
     @Test
-    public void iTestAddMoney() throws FarmHasWonException {
+    public void test9AddMoney() throws FarmHasWonException {
         farm.setMoney(1000);
         farm.addMoney(1);
         assertEquals(1001, farm.getMoney());
     }
     
     @Test (expected = FarmHasWonException.class)
-    public void jTestFarmMoneyWin() throws FarmHasWonException {
+    public void test10FarmMoneyWin() throws FarmHasWonException {
         farm.setMoney(FarmControl.MAX_MONEY-1);
         farm.addMoney(1);
     }
     
     @Test (expected = FarmHasWonException.class)
-    public void kTestMoneyWinOver() throws FarmHasWonException {
+    public void test11MoneyWinOver() throws FarmHasWonException {
         farm.setMoney(FarmControl.MAX_MONEY-1);
         farm.addMoney(2);
     }
     
     @Test (expected = IllegalArgumentException.class)
-    public void lTestTooMuchMoney() throws IllegalArgumentException {
+    public void test12TooMuchMoney() throws IllegalArgumentException {
         farm.setMoney(FarmControl.MAX_MONEY);
     }
     
@@ -122,7 +122,7 @@ public class FarmTest {
      * @throws AssetAlreadyDeadException 
      */
     @Test
-    public void mTestAddAsset() {
+    public void test13AddAsset() {
         Asset myAsset = af.createRandomAsset();
         farm.addAsset(myAsset);
         assertEquals(farm.removeAssetByIndex(0), myAsset);
@@ -133,14 +133,14 @@ public class FarmTest {
      * @throws AssetAlreadyDeadException 
      */
     @Test
-    public void oTestRemoveAsset() {
+    public void test14RemoveAsset() {
         Asset myAsset = af.createRandomAsset();
         farm.addAsset(myAsset);
         assertTrue(farm.removeAsset(myAsset));
     }
     
     @Test
-    public void xTestGetAssetList() {
+    public void test15GetAssetList() {
         Asset myAsset = af.createAsset(1);
         farm.addAsset(myAsset);
         ArrayList<Asset> list = farm.getAssetList();
@@ -152,14 +152,17 @@ public class FarmTest {
      * 
      */
     @Test
-    public void yTestGetAssetByIndex() {
+    public void test16GetAssetByIndex() {
         Asset myAsset = af.createAsset(0);
         farm.addAsset(myAsset);
         assertEquals(farm.getAssetByIndex(0), myAsset);
     }
     
-    public void zTestMakeFarm() {
+    @Test
+    public void test17MakeFarm() {
         Farm myFarm = Farm.makeFarm();
         assertTrue(myFarm != null);
     }
+    
+    
 }

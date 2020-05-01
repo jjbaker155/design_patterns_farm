@@ -1,15 +1,21 @@
+/**
+ * Represents one field of a corn.
+ * @jjbaker4
+ * @version 1.0
+ */
+
 package main.java;
 
-public class Corn extends Crop{
+public class Corn extends Crop {
     
     //land needed for crop
-    public final static double LAND_NEEDED = 0.2;
+    public static final double LAND_NEEDED = 0.2;
     //cost of one unit
-    public final static int COST = 150;
+    public static final int COST = 150;
     //profit per harvest
-    public final static int PROFIT = 475;
+    public static final int PROFIT = 475;
     //how to harvest
-    private final static HarvestStrategy HS = RegularHarvest.getRegularHarvest();
+    private static final HarvestStrategy HS = RegularHarvest.getRegularHarvest();
     
     
     public Corn() {

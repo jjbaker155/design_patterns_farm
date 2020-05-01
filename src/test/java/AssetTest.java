@@ -43,7 +43,7 @@ public class AssetTest {
         corn2 = (Corn) af.createAsset(4);
         hog1 = (Hog) af.createAsset("hog");
         hog2 = (Hog) af.createAsset(1);
-        cow1 = (DairyCow) af.createAsset("DairyCow");
+        cow1 = (DairyCow) af.createAsset("Dairy Cow");
         cow2 = (DairyCow) af.createAsset(3);
     }
     

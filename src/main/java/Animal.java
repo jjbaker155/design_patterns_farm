@@ -1,19 +1,21 @@
 package main.java;
 
 /**
- * Any farm animal
+ * Any farm animal.
  * @author jjbaker
  *
  */
-public abstract class Animal extends Asset{
+public abstract class Animal extends Asset {
     
     //cycles to die
-    public final static int AGE_TO_DIE = 14;
+    public static final int AGE_TO_DIE = 14;
     
     /**
-     * Sets required land, and base profit per animal
-     * @param l land
-     * @param p profit
+     * Sets required land, and base profit per animal.
+     * @param cost integer cost of product
+     * @param profit integer profit from product
+     * @param land number of acres
+     * @param hs HarvestStrategy
      */
     public Animal(int cost, int profit, double land, HarvestStrategy hs) {
         super(cost, profit, land, hs);

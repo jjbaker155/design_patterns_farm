@@ -1,8 +1,12 @@
 /**
  * Parent for all asset types. Contains and manages attributes that 
  * all Farm Assets share. Also has some creation methods.
+ * @jjbaker4
+ * @version 1.0
  */
+
 package main.java;
+
 import java.util.Random;
 
 public abstract class Asset {
@@ -16,7 +20,7 @@ public abstract class Asset {
     //state context for this asset
     private AssetStateContext sc;
     //harvest strategy
-    private final HarvestStrategy HARVEST_STRATEGY;
+    private final HarvestStrategy harvestStrategy;
     //age of asset in days
     private int age;
     //days until next harvest
@@ -25,18 +29,25 @@ public abstract class Asset {
     static Random rand = new Random();
     
     
+    /**
+     * Contructor for Asset. Attributes are passed up from subclasses.
+     * @param c int cost
+     * @param p int profit
+     * @param l land needed
+     * @param hs harvest strategy
+     */
     public Asset(int c, int p, double l, HarvestStrategy hs) {
         landNeeded = l;
         cost = c;
         profit = p;
         sc = new AssetStateContext();
-        HARVEST_STRATEGY = hs;
+        harvestStrategy = hs;
         harvestDays = FarmControl.DEFAULT_HARVEST_DAYS;
         setAlive();
     }
 
     /**
-     * Gets the land needed
+     * Gets the land needed.
      * @return double the amount of land this animal occupies
      */
     public double getLandNeeded() {
@@ -44,7 +55,7 @@ public abstract class Asset {
     }
     
     /**
-     * Returns the cost to purchase this animal
+     * Returns the cost to purchase this animal.
      * @return
      */
     public int getCost() {
@@ -52,7 +63,7 @@ public abstract class Asset {
     }
     
     /**
-     * Returns the profit this asset produces
+     * Returns the profit this asset produces.
      * @return
      */
     public int getProfit() {
@@ -60,10 +71,10 @@ public abstract class Asset {
     }
     
     /**
-     * Calls harvest() from the appropriate HarvestStrategy object 
+     * Calls harvest() from the appropriate HarvestStrategy object.
      */
     public int harvest() {
-        return HARVEST_STRATEGY.harvest(this);
+        return harvestStrategy.harvest(this);
     }
     
     /**
@@ -86,6 +97,10 @@ public abstract class Asset {
         return sc.isDead();
     }
     
+    /**
+     * Returns of the asset is alive and not sick.
+     * @return boolean true if asset is healthy
+     */
     public boolean isHealthy() {
         if (isAlive() && !isDiseased()) {
             return true;
@@ -94,7 +109,7 @@ public abstract class Asset {
     }
     
     /**
-     * Set state of asset to diseased
+     * Set state of asset to diseased.
      * @throws AssetAlreadyDeadException Asset is already dead. You cannot change state
      */
     public void setDiseased() {
@@ -102,7 +117,7 @@ public abstract class Asset {
     }
     
     /**
-     * Set state of the asset to dead
+     * Set state of the asset to dead.
      * @throws AssetAlreadyDeadException Asset is already dead. You cannot change state
      */
     public void setDead() {
@@ -110,23 +125,12 @@ public abstract class Asset {
     }
     
     /**
-     * Sets the state of the asset to alive
+     * Sets the state of the asset to alive.
      * 
      */
     public void setAlive() {
         sc.setState(new StateAlive());
     }
-    
-    /**
-     * Set asset to alive in the case of a reorder
-     */
-    /*
-    public void setAliveNewAsset() {
-        sc.setState(new StateAlive());
-        setAge(0);
-        harvestDays = FarmControl.DEFAULT_HARVEST_DAYS;
-    }
-    */
     
     
     public void setAge(int a) {
@@ -138,7 +142,7 @@ public abstract class Asset {
     }
     
     /**
-     * Increase age of the asset by 1 day
+     * Increase age of the asset by 1 day.
      * Decrease countdown until next harvest
      */
     public void incrementDay() {
@@ -147,7 +151,7 @@ public abstract class Asset {
     }
     
     /**
-     * Return number of days until harvest
+     * Return number of days until harvest.
      * @return
      */
     public int getHarvestDays() {
@@ -155,7 +159,7 @@ public abstract class Asset {
     }
     
     /**
-     * Get a String representation of the asset type
+     * Get a String representation of the asset type.
      * @return
      */
     public String getTypeName() {
@@ -181,11 +185,11 @@ public abstract class Asset {
     }
     
     /**
-     * Indicates whether or not harvesting this asset will kill it
+     * Indicates whether or not harvesting this asset will kill it.
      * @return boolean true if terminal
      */
     public boolean isHarvestTerminal() {
-        return HARVEST_STRATEGY.isHarvestTerminal();
+        return harvestStrategy.isHarvestTerminal();
     }
     
     
