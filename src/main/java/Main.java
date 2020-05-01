@@ -23,7 +23,7 @@ public class Main {
                     System.in.read();
                 }
                 catch (Exception e) {
-                    e.getMessage();
+                    System.out.println(e.getMessage());
                 }
             } catch (EndSimulationException e1) {
                 gameOn = false;
