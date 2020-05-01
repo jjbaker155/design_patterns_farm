@@ -620,7 +620,7 @@ public class FarmControl {
      * Returns the number of veterinarians working on the farm.
      * @return farmers that are vets
      */
-    private int numberOfVeterinaryFarmers() {
+    public int numberOfVeterinaryFarmers() {
         int num = 0;
         ArrayList<Farmer> list = farm.getFarmerList();
         for (Farmer f : list) {
@@ -742,7 +742,7 @@ public class FarmControl {
      * Check each animals age and move to dead if over 14 days.
      * Reorder replacement
      */
-    private void checkAnimalAge() {
+    public void checkAnimalAge() {
         ArrayList<Animal> list = getAliveAnimals();
         for (Animal a : list) {
             if (a.getAge() >= a.AGE_TO_DIE) {

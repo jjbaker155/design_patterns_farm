@@ -10,10 +10,12 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import main.java.Animal;
 import main.java.Asset;
 import main.java.AssetFactory;
 import main.java.Cattle;
 import main.java.Corn;
+import main.java.Crop;
 import main.java.DairyCow;
 import main.java.Farm;
 import main.java.FarmControl;
@@ -32,7 +34,7 @@ import main.java.StateDead;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FarmControlTest {
 
-    private FarmControl farmControl;
+    private FarmControl farmControl = FarmControl.createFarmControl();
     private Farm farm;
     private AssetFactory af = AssetFactory.makeAssetFactory();
     private FarmerControl farmerControl;
@@ -371,4 +373,89 @@ public class FarmControlTest {
                 farm.addAsset(hog2) && farm.addAsset(cow2));
     }
     
+    /**
+     * Set state patterns to dead and reorder.
+     * @throws FarmIsBankruptException if farm is out of money
+     */
+    @Test
+    public void test22ReorderAll() throws FarmIsBankruptException {
+        Cattle a1 = (Cattle) af.createAsset("cattle");
+        
+        farm.addAsset(a1);
+        
+        a1.setDead();
+        Asset b1 = farm.getAssetByIndex(0);
+        farmControl.reOrderAllPerished();
+        
+        
+        assertTrue(a1 == b1 && !farm.getAssetByIndex(0).isDead());
+    }
+    
+    @Test
+    public void test23NumVetFarmers() {
+        Farmer vet1 = farmerControl.createFarmer(FarmerKind.VETERINARY);
+        Farmer vet2 = farmerControl.createFarmer(FarmerKind.VETERINARY);
+        Farmer animal1 = farmerControl.createFarmer(FarmerKind.ANIMAL);
+        Farmer crops1 = farmerControl.createFarmer(FarmerKind.CROPS);
+        Farmer merchant = farmerControl.createFarmer(FarmerKind.MERCHANT);
+        farm.addFarmer(vet1);
+        farm.addFarmer(vet2);
+        farm.addFarmer(animal1);
+        farm.addFarmer(crops1);
+        farm.addFarmer(merchant);
+        
+        assertEquals(2, farmControl.numberOfVeterinaryFarmers());
+    }
+    
+    @Test
+    public void test24animalAge() {
+        Cattle cattle1 = (Cattle) af.createAsset("cattle");
+        farm.addAsset(cattle1);
+        farmControl.incrementDay();
+        farmControl.incrementDay();
+        Sheep sheep1 = (Sheep) af.createAsset("sheep");
+        farm.addAsset(sheep1);
+        
+        assertTrue(cattle1.getAge() == 2 && sheep1.getAge() == 0);
+    }
+    
+    @Test
+    public void test25getHealthyCrops() {
+        Cattle cattle1 = (Cattle) af.createAsset("cattle");
+        farm.addAsset(cattle1);
+        Corn corn1 = (Corn) af.createAsset("corn");
+        farm.addAsset(corn1);
+        Sheep sheep1 = (Sheep) af.createAsset("sheep");
+        farm.addAsset(sheep1);
+        Soy soy1 = (Soy) af.createAsset("soy");
+        farm.addAsset(soy1);
+        Soy soy2 = (Soy) af.createAsset("soy");
+        farm.addAsset(soy2);
+        
+        soy1.setDiseased();
+        corn1.setDead();
+        
+        ArrayList<Crop> list = farmControl.getHealthyCrops();
+        assertTrue(list.contains(soy2) && !list.contains(soy1));
+    }
+    
+    @Test
+    public void test26getHealthyAnimals() {
+        Cattle cattle1 = (Cattle) af.createAsset("cattle");
+        farm.addAsset(cattle1);
+        Corn corn1 = (Corn) af.createAsset("corn");
+        farm.addAsset(corn1);
+        Sheep sheep1 = (Sheep) af.createAsset("sheep");
+        farm.addAsset(sheep1);
+        Soy soy1 = (Soy) af.createAsset("soy");
+        farm.addAsset(soy1);
+        Soy soy2 = (Soy) af.createAsset("soy");
+        farm.addAsset(soy2);
+        
+        cattle1.setDiseased();
+        
+        ArrayList<Animal> list = farmControl.getHealthyAnimals();
+        assertTrue(list.contains(sheep1) && !list.contains(cattle1));
+    }
+
 }
