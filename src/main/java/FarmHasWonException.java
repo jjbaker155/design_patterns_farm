@@ -1,6 +1,6 @@
 package main.java;
 
-public class FarmHasWonException extends Exception {
+public class FarmHasWonException extends EndSimulationException {
     
     /**
      * Default message

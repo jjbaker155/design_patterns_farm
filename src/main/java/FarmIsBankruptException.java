@@ -1,6 +1,6 @@
 package main.java;
 
-public class FarmIsBankruptException extends Exception{
+public class FarmIsBankruptException extends EndSimulationException{
     
     
     public FarmIsBankruptException() {

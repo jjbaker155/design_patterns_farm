@@ -16,6 +16,8 @@ import main.java.Cattle;
 import main.java.Corn;
 import main.java.Farm;
 import main.java.FarmControl;
+import main.java.FarmHasWonException;
+import main.java.FarmIsBankruptException;
 import main.java.Farmer;
 import main.java.FarmerControl;
 import main.java.FarmerControl.FarmerKind;
@@ -73,10 +75,11 @@ public class FarmControlTest {
     /**
      * Test to see if purchase a random asset works
      * Should have 5 assets after this test
+     * @throws FarmIsBankruptException 
      * @throws AssetAlreadyDeadException 
      */
     @Test
-    public void test4purchaseRandomAsset() {
+    public void test4purchaseRandomAsset() throws FarmIsBankruptException {
         farmControl.purchaseRandomAsset();
         ArrayList<Asset> assetList = farmControl.getFarm().getAssetList();
         assertTrue(assetList.get(0) instanceof Asset);
@@ -85,19 +88,21 @@ public class FarmControlTest {
     /**
      * Test to see if buyAcre() works.
      * Farm size should be 2.0 after this test
+     * @throws FarmIsBankruptException 
      */
     @Test
-    public void test5buyAcre() {
+    public void test5buyAcre() throws FarmIsBankruptException {
         farmControl.buyAcre();
         assertTrue(farm.getAcreage() == 2.0);
     }
     
     /**
      * Test harvesting one crop asset
+     * @throws FarmHasWonException 
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test8HarvestCrops() {
+    public void test8HarvestCrops() throws FarmHasWonException {
         Corn corn = (Corn) af.createAsset(4);
         corn.setAge(3);
         corn.setHarvestDays(0);
@@ -108,10 +113,11 @@ public class FarmControlTest {
     
     /**
      * Test harvest one animal
+     * @throws FarmHasWonException 
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test9HarvestAnimals() {
+    public void test9HarvestAnimals() throws FarmHasWonException {
         Cattle cattle = (Cattle) af.createAsset(0);
         cattle.setAge(3);
         cattle.setHarvestDays(0);
@@ -135,10 +141,11 @@ public class FarmControlTest {
     
     /**
      * Tests the harvest of multiple crops but only if they qualify
+     * @throws FarmHasWonException 
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test12HarvestMultipleCrops() {
+    public void test12HarvestMultipleCrops() throws FarmHasWonException {
         Cattle cattle1 = (Cattle) af.createAsset("cattle"); 
         Hog hog1 = (Hog) af.createAsset("hog");
         
@@ -171,10 +178,11 @@ public class FarmControlTest {
     
     /**
      * Tests the harvest of multiple Animals but only of they qualify
+     * @throws FarmHasWonException 
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test13HarvestMultipleAnimals() {
+    public void test13HarvestMultipleAnimals() throws FarmHasWonException {
         Cattle cattle1 = (Cattle) af.createAsset("cattle"); 
         Hog hog1 = (Hog) af.createAsset("hog");
         Sheep sheep1 = (Sheep) af.createAsset("sheep");
@@ -220,10 +228,11 @@ public class FarmControlTest {
     
     /**
      * Test the merchant farmer bonus for the sale of animals
+     * @throws FarmHasWonException 
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test14MerchantBonus() {
+    public void test14MerchantBonus() throws FarmHasWonException {
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
@@ -242,10 +251,11 @@ public class FarmControlTest {
     
     /**
      * Test the merchant farmer bonus for the sale of crops
+     * @throws FarmHasWonException 
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test15MerchantBonus() {
+    public void test15MerchantBonus() throws FarmHasWonException {
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.MERCHANT));
         Corn corn1 = (Corn) af.createAsset("corn");
@@ -262,10 +272,11 @@ public class FarmControlTest {
     
     /**
      * Test the crop farmer bonus for the sale of crops
+     * @throws FarmHasWonException 
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test16CropBonus() {
+    public void test16CropBonus() throws FarmHasWonException {
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
@@ -285,10 +296,11 @@ public class FarmControlTest {
     
     /**
      * Test the crop farmer bonus for the sale of crops
+     * @throws FarmHasWonException 
      * @throws AssetAlreadyDeadException
      */
     @Test
-    public void test17AnimalBonus() {
+    public void test17AnimalBonus() throws FarmHasWonException {
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.ANIMAL));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.ANIMAL));
         farm.addFarmer(farmerControl.createFarmer(FarmerKind.CROPS));
@@ -306,15 +318,10 @@ public class FarmControlTest {
     }
     
     @Test
-    public void test18runDay() {
+    public void test18runDay() throws FarmHasWonException, FarmIsBankruptException {
         farmControl.runDay();
     }
-    
-    @Test
-    public void test19runNight() {
-        farmControl.runNight();
-    }
-    
+
     @Test
     public void test20IncrementAnimalAge() {
         Cattle cattle1 = (Cattle) af.createAsset("cattle");

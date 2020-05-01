@@ -179,11 +179,11 @@ public class Farm {
      * Deduct money. Throws exception if Farm is bankrupt.
      * @param d amount of money to deduct
      */
-    public void deductMoney(int d) {
+    public void deductMoney(int d) throws FarmIsBankruptException {
         currentMoney -= d;
-        //if (currentMoney < 0) {
-        //    throw new FarmIsBankruptException();
-        //}
+        if (currentMoney < 0) {
+            throw new FarmIsBankruptException("The farm has gone bankrupt.");
+        }
     }
     
     /**
@@ -194,7 +194,7 @@ public class Farm {
     public void addMoney(int a) throws FarmHasWonException {
         currentMoney += a;
         if (currentMoney >= FarmControl.MAX_MONEY) {
-            throw new FarmHasWonException();
+            throw new FarmHasWonException("Farm has won the simulation by exceeding the earnings goal: " + currentMoney);
         }
     }
     

@@ -69,6 +69,7 @@ public class FarmControl {
     
     /**
      * Private constructor
+     * @throws FarmIsBankruptException 
      */
     private FarmControl() {
         farm = Farm.makeFarm();
@@ -97,6 +98,7 @@ public class FarmControl {
     /**
      * Create singleton FarmControl
      * @return FarmControl
+     * @throws FarmIsBankruptException 
      */
     public static FarmControl createFarmControl() {
         if (farmControlSoleInstance == null) {
@@ -138,12 +140,17 @@ public class FarmControl {
     
     /**
      * Generate initial assets for your farm
+     * @throws FarmIsBankruptException 
      */
     public void generateInitialAssets() {
         dayReportAdd("Initial Asset Purchase:");
         dayReportAdd(REPORT_ITEM_SEPERATOR);
         for (int i = 0; i < INITIAL_ASSETS; i++) {
-            purchaseRandomAsset();
+            try {
+                purchaseRandomAsset();
+            } catch (FarmIsBankruptException e) {
+                e.printStackTrace();
+            }
         }
         dayReportAdd("\n");
     }
@@ -162,8 +169,9 @@ public class FarmControl {
      * Add a random asset to your farm
      * @param Farm to add the asset to
      * @param String representing asset type
+     * @throws FarmIsBankruptException 
      */
-    public void purchaseRandomAsset() {
+    public void purchaseRandomAsset() throws FarmIsBankruptException {
         Asset a = af.createRandomAsset();
         if(farm.getSpaceAvailable() < a.getLandNeeded()) {
             buyAcre();
@@ -177,8 +185,12 @@ public class FarmControl {
     /**
      * Run through Day Sequence
      * @return report
+     * @throws FarmHasWonException 
+     * @throws FarmIsBankruptException 
+     * @throws SimulationInconclusiveException 
      */
-    public void runDay() {
+    public void runDay() throws FarmHasWonException, FarmIsBankruptException, 
+    SimulationInconclusiveException {
         //todo: add some summary to day report
         //todo: place try/catch in methods where it will be useful
         harvestCrops();
@@ -196,39 +208,21 @@ public class FarmControl {
         if(shouldBuyAcre()) {
             buyAcre();
         }
-        if (farm.getMoney() > MAX_MONEY) {
-            dayReportAdd("\nReached money goal. Farm has succeded.");
-            gameOn = false;
-        }
-        if (farm.getMoney() < 0) {
-            dayReportAdd("\nBankrupt. Farm has failed.");
-            gameOn = false;
-        }
-        if (farm.getAcreage() >= MAX_ACREAGE) {
-            dayReportAdd("\nReached land goal. Farm has succeded.");
-            gameOn = false;
-        }
-        if (cycles >= MAX_CYCLES) {
-            dayReportAdd("\nReached cycle max. Simulation ended inconclusively.");
-            gameOn = false;
-        }
         incrementDay();
-        
-    }
-    
-    /**
-     * Run through Night Sequence
-     * @return String report
-     */
-    public void runNight() {
+        if (cycles > MAX_CYCLES) {
+            throw new SimulationInconclusiveException
+            ("Reached max days. Simulation has ended inconclusively.");  
+        }
+        dayReportAdd("\n\nThat night..." + REPORT_STAR_SEPERATOR);
         makeAnimalSick();
         makeCropSick();
     }
     
     /**
      * Pay the farmer for their work on the farm
+     * @throws FarmIsBankruptException 
      */
-    public void payFarmers() {
+    public void payFarmers() throws FarmIsBankruptException {
         int payRoll = farm.getFarmerCount() * FARMER_PER_DIEM;
         dayReportAdd("\n" + farm.getFarmerCount() + " farmers paid.\nTotal: " + payRoll);
         farm.deductMoney(payRoll);
@@ -244,8 +238,9 @@ public class FarmControl {
     
     /**
      * Purchase an acre of land
+     * @throws FarmIsBankruptException 
      */
-    public void buyAcre() {
+    public void buyAcre() throws FarmIsBankruptException {
         farm.deductMoney(ACRE_COST);
         farm.addAcre();
     }
@@ -253,8 +248,9 @@ public class FarmControl {
     /**
      * Harvest all crops that qualify and return the proceeds
      * @return int the proceeds
+     * @throws FarmHasWonException if mac money is reached
      */
-    public int harvestCrops() {
+    public int harvestCrops() throws FarmHasWonException {
         dayReportAdd("Crop Harvest:\n" + REPORT_ITEM_SEPERATOR);
         double bonus = cropHarvestBonus();
         double merchantBonus = merchantFarmerBonus();
@@ -280,15 +276,18 @@ public class FarmControl {
         dayReportAdd("Merchant farmer harvest bonus = " + merchantBonus);
         double multiplier = bonus + merchantBonus + 1.0;
         double p = proceeds * multiplier;
+        dayReportAdd("Harvested " + count + " crops.");
         dayReportAdd("Total crop earnings: " + p + "\n");
-        return (int) p;
+        farm.addMoney((int)p);
+        return (int)p;
     }
     
     /**
      * Harvest all animals that qualify and return the proceeds
      * @return int the proceeds
+     * @throws FarmHasWonException 
      */
-    public int harvestAnimals() {
+    public int harvestAnimals() throws FarmHasWonException {
         dayReportAdd("Animal Harvest:\n" + REPORT_ITEM_SEPERATOR);
         double bonus = animalHarvestBonus();
         double merchantBonus = merchantFarmerBonus();
@@ -315,15 +314,18 @@ public class FarmControl {
         dayReportAdd("Merchant farmer bonus = " + merchantBonus);
         double multiplier = bonus + merchantBonus + 1;
         double p = proceeds * multiplier;
+        dayReportAdd("Harvested " + count + " animals.");
         dayReportAdd("Total animal earnings: " + p);
-        return (int) p;
+        farm.addMoney((int)p);
+        return (int)p;
     }
        
     /**
      * Reorder the asset.
      * @param a
+     * @throws FarmIsBankruptException 
      */
-    public void reOrder(Asset a) {
+    public void reOrder(Asset a) throws FarmIsBankruptException {
         farm.removeAsset(a);
         farm.addAsset(af.createAssetOfType(a));
         farm.deductMoney(a.getCost());
@@ -332,8 +334,9 @@ public class FarmControl {
     
     /**
      * Reorder all perished assets
+     * @throws FarmIsBankruptException 
      */
-    public void reOrderAllPerished() {
+    public void reOrderAllPerished() throws FarmIsBankruptException {
         ArrayList<Asset> assetList = farm.getAssetList();
         for(Asset a : assetList) {
             if(a instanceof Animal && a.isDead())

@@ -10,8 +10,7 @@ public class Main {
         FarmControl fc = FarmControl.createFarmControl();
         do {
             fc.runDay();
-            System.out.println(fc.reportDay());
-            fc.runNight();
+            System.out.println(fc.reportDay());;
             System.out.println(fc.reportNight());
             System.out.println("\nPress enter key to move on 1 day:");
             try {
