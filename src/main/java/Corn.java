@@ -8,13 +8,12 @@ public class Corn extends Crop{
     public final static int COST = 150;
     //profit per harvest
     public final static int PROFIT = 475;
-    //base disease death rate
-    public final static double DISEASE_DEATH_RATE = .45;
+    //how to harvest
     private final static HarvestStrategy HS = RegularHarvest.getRegularHarvest();
     
     
     public Corn() {
-        super(COST, PROFIT, LAND_NEEDED, DISEASE_DEATH_RATE, HS);
+        super(COST, PROFIT, LAND_NEEDED, HS);
     }
 
 }

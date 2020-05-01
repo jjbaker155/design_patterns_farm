@@ -15,7 +15,7 @@ public class FarmControl {
     
     //defaults    
     //wait time for regular harvest
-    public final static int REG_HARVEST_WAIT = 2;
+    public static final int REG_HARVEST_WAIT = 2;
     //cycles to mature
     public final static int TIME_TO_MATURE = 3;
     //number farmers you begin with
@@ -39,16 +39,16 @@ public class FarmControl {
     //Farmer to Acre ratio
     private final static double FARMER_PURCHASE_TRIGGER = 0.4;
     //days between harvests for renewable assets
-    public static final int DEFAULT_HARVEST_DAYS = 3;
+    public final static int DEFAULT_HARVEST_DAYS = 3;
     //chance animal will get sick
-    private final double ANIMAL_SICKNESS_CHANCE = 0.70;
+    private final static double ANIMAL_SICKNESS_CHANCE = 0.70;
     //chance crop will get sick
-    private final double CROP_SICKNESS_CHANCE = 0.60;
+    private final static double CROP_SICKNESS_CHANCE = 0.60;
     //chance of healing asset
-    private final double ASSET_HEAL_CHANCE = 0.15;
+    private final static double ASSET_HEAL_CHANCE = 0.15;
     //for report building
-    private final String REPORT_ITEM_SEPERATOR = "-------------------";
-    private final String REPORT_STAR_SEPERATOR = "*****************" + 
+    private final static String REPORT_ITEM_SEPERATOR = "-------------------";
+    private final static String REPORT_STAR_SEPERATOR = "*****************" + 
     "*************";
     
     private int cycles;
@@ -56,7 +56,6 @@ public class FarmControl {
     private static Random rand = new Random();
     private Farm farm;
     private FarmerControl farmerControl;
-    private int day;
     
     private StringBuilder dayReport;
     private StringBuilder nightReport;
@@ -74,10 +73,12 @@ public class FarmControl {
     private FarmControl() {
         farm = Farm.makeFarm();
         af = AssetFactory.makeAssetFactory();
-        day = 0;
         resetCycleReports();
         gameOn = true;
         cycles = 0;
+        attachFarmerControl();
+        generateInitialFarmers();
+        generateInitialAssets();
     }
     
     /**
@@ -85,12 +86,12 @@ public class FarmControl {
      * @param boolean to indicate using this constructor
      */
     private FarmControl(boolean test) {
-        farm = Farm.makeTestFarm();
-        af = AssetFactory.makeAssetFactory();
-        day = 0;
-        resetCycleReports();
-        gameOn = true;
-        cycles = 0;
+        this.farm = Farm.makeTestFarm();
+        this.af = AssetFactory.makeAssetFactory();
+        this.resetCycleReports();
+        this.gameOn = true;
+        this.cycles = 0;
+        this.attachFarmerControl();
     }
     
     /**
@@ -100,9 +101,6 @@ public class FarmControl {
     public static FarmControl createFarmControl() {
         if (farmControlSoleInstance == null) {
             farmControlSoleInstance = new FarmControl();
-            farmControlSoleInstance.attachFarmerControl();
-            farmControlSoleInstance.generateInitialFarmers();
-            farmControlSoleInstance.generateInitialAssets();
         }
         return farmControlSoleInstance;
     }
@@ -114,7 +112,6 @@ public class FarmControl {
      */
     public static FarmControl createTestFarmControl() {
         farmControlSoleInstance = new FarmControl(true);
-        farmControlSoleInstance.attachFarmerControl();
         return farmControlSoleInstance;
     }
     
@@ -125,7 +122,7 @@ public class FarmControl {
         if (farmerControl == null)
             farmerControl = FarmerControl.createFarmerControl();
     }
-    
+
     /**
      * Generate 3 random farmer types for your farm
      * @param farm
@@ -199,7 +196,6 @@ public class FarmControl {
         if(shouldBuyAcre()) {
             buyAcre();
         }
-        cycles++;
         if (farm.getMoney() > MAX_MONEY) {
             dayReportAdd("\nReached money goal. Farm has succeded.");
             gameOn = false;
@@ -217,6 +213,7 @@ public class FarmControl {
             gameOn = false;
         }
         incrementDay();
+        
     }
     
     /**
@@ -368,7 +365,7 @@ public class FarmControl {
      */
     private boolean shouldHireFarmer() {
         //if farmer coverage bonus falls below 0.5
-        if (farm.getFarmerCount()/farm.getAcreage() < 0.4) {
+        if (farm.getFarmerCount()/farm.getAcreage() < FARMER_PURCHASE_TRIGGER) {
             dayReportAdd("Hiring new farmer:");
             return true;
         }
@@ -428,7 +425,7 @@ public class FarmControl {
         Animal a = getSickAnimal();
         double odds = ASSET_HEAL_CHANCE + veterinaryHealBonus();
         if(a != null) {
-            if(rand.nextDouble() <= ASSET_HEAL_CHANCE) {
+            if(rand.nextDouble() <= odds) {
                 a.setAlive();
                 a.setHarvestDays(DEFAULT_HARVEST_DAYS);
                 dayReportAdd("Sick " + a.getTypeName() + 
@@ -451,7 +448,7 @@ public class FarmControl {
         Crop c = getSickCrop();
         double odds = ASSET_HEAL_CHANCE + veterinaryHealBonus();
         if(c != null) {
-            if(rand.nextDouble() <= ASSET_HEAL_CHANCE) {
+            if(rand.nextDouble() <= odds) {
                 c.setAlive();
                 c.setHarvestDays(DEFAULT_HARVEST_DAYS);
                 dayReportAdd("Sick " + c.getTypeName() + 
@@ -474,7 +471,8 @@ public class FarmControl {
         if(getAnimalsForHarvest().size() == 0) {
             return 0;
         }
-        return numberOfAnimalFarmers() / getAnimalsForHarvest().size() / 25.0;
+        return (double)numberOfAnimalFarmers() /
+                (double) getAnimalsForHarvest().size() / 25.0;
     }
     
     /**
@@ -485,7 +483,8 @@ public class FarmControl {
         if (getCropsForHarvest().size() == 0) {
             return 0.0;
         }
-        return (numberOfCropFarmers() / getCropsForHarvest().size()) / 25.0;
+        return (double)numberOfCropFarmers() /
+                (double)getCropsForHarvest().size() / 25.0;
     }
        
     /**
@@ -496,7 +495,8 @@ public class FarmControl {
         if (numberOfAnimals() == 0) {
             return 0.0;
         }
-        return numberOfVeterinaryFarmers() / numberOfAnimals() / 10.0;
+        return (double)numberOfVeterinaryFarmers() /
+                (double)numberOfAnimals() / 10.0;
     }
     
     /**
@@ -507,7 +507,7 @@ public class FarmControl {
         if(numberOfCrops() == 0) {
             return 0.0;
         }
-        return numberOfCropFarmers() / numberOfCrops() / 15.0;
+        return (double)numberOfCropFarmers() / (double)numberOfCrops() / 15.0;
     }
     
     /**
@@ -646,11 +646,11 @@ public class FarmControl {
      * Sets reports up for a new cycle
      */
     private void resetCycleReports() {
-        String dayInit = new String(REPORT_STAR_SEPERATOR + REPORT_STAR_SEPERATOR +
-                "\n" + "DayReport:\n\n");
+        String dayInit = REPORT_STAR_SEPERATOR + REPORT_STAR_SEPERATOR +
+                "\n" + "DayReport:\n\n";
         dayReport = new StringBuilder(dayInit);
-        String nightInit = new String(REPORT_STAR_SEPERATOR + REPORT_STAR_SEPERATOR + 
-                "\n" + "NightReport:\n");
+        String nightInit = REPORT_STAR_SEPERATOR + REPORT_STAR_SEPERATOR + 
+                "\n" + "NightReport:\n";
         nightReport = new StringBuilder(nightInit);
     }
     
@@ -827,7 +827,7 @@ public class FarmControl {
                 a.incrementDay();
             }
         }
-        day++;
+       cycles++;
     }
         
 }

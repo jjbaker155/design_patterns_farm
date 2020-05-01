@@ -13,8 +13,6 @@ public abstract class Asset {
     private int profit;
     //cost to purchase asset
     private int cost;
-    //disease death rate
-    private double diseaseDeathRate;
     //state context for this asset
     private AssetStateContext sc;
     //harvest strategy
@@ -27,12 +25,11 @@ public abstract class Asset {
     static Random rand = new Random();
     
     
-    public Asset(int c, int p, double l, double deathRate, HarvestStrategy hs) {
+    public Asset(int c, int p, double l, HarvestStrategy hs) {
         landNeeded = l;
         cost = c;
         profit = p;
         sc = new AssetStateContext();
-        diseaseDeathRate = deathRate;
         HARVEST_STRATEGY = hs;
         harvestDays = FarmControl.DEFAULT_HARVEST_DAYS;
         setAlive();

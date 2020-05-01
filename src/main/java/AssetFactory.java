@@ -12,7 +12,6 @@ public class AssetFactory {
     private static Random rand = new Random();
     
     private AssetFactory() {
-        rand = new Random();
     }
     
     /**

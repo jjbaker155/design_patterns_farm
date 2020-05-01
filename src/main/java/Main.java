@@ -1,11 +1,12 @@
 package main.java;
 
+import java.nio.charset.Charset;
 import java.util.Scanner;
 
 public class Main {
     
     public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
+        Scanner input = new Scanner(System.in, Charset.forName("UTF-8"));
         FarmControl fc = FarmControl.createFarmControl();
         do {
             fc.runDay();
@@ -20,5 +21,6 @@ public class Main {
             
             }
         } while(fc.isGameOn());
+        input.close();
     }
 }
